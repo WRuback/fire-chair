@@ -45,6 +45,9 @@ function App() {
     socket.on('connect',()=>{
      console.log("Conect to server!");
     });
+    socket.on('startGame',(game)=>{
+      console.log(game);
+     });
   },[]);
   return (
     <ApolloProvider client={client}>
