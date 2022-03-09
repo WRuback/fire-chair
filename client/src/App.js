@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ApolloClient,
   InMemoryCache,
@@ -7,6 +7,7 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {io} from 'socket.io-client';
 
 import Home from './pages/Home';
 import Profile from './pages/Profile';
@@ -36,7 +37,15 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+
+
 function App() {
+  useEffect(()=>{
+    const socket = io('http://localhost:3001');
+    socket.on('connect',()=>{
+     console.log("Conect to server!");
+    });
+  },[]);
   return (
     <ApolloProvider client={client}>
       <Router>
