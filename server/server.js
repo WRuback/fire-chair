@@ -7,6 +7,7 @@ const socketIO = require('socket.io');
 
 const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
+const gameLobby = require('./socket');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -36,9 +37,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
 
-io.on('connection', socket =>{
-  console.log(socket.id);
-});
+io.on('connection', gameLobby);
 // Create a new instance of an Apollo server with the GraphQL schema
 const startApolloServer = async (typeDefs, resolvers) => {
   await server.start();
