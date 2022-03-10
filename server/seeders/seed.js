@@ -1,11 +1,13 @@
 const db = require('../config/connection');
-const { Profile } = require('../models');
-const profileSeeds = require('./profileSeeds.json');
+const { Prompt } = require('../models');
+const promptSeeds = require('./promptSeeds');
 
 db.once('open', async () => {
   try {
-    await Profile.deleteMany({});
-    await Profile.create(profileSeeds);
+    await Prompt.deleteMany({});
+    for (const prompt of promptSeeds) {
+      await Prompt.create(prompt);
+    }
 
     console.log('all done!');
     process.exit(0);
