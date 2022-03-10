@@ -6,18 +6,18 @@ import { useQuery } from '@apollo/client';
 import SkillsList from '../components/SkillsList';
 import SkillForm from '../components/SkillForm';
 
-import { QUERY_SINGLE_PROFILE, QUERY_ME } from '../utils/queries';
+import { QUERY_SINGLE_USER, QUERY_ME } from '../utils/queries';
 
 import Auth from '../utils/auth';
 
-const Profile = () => {
-  const { profileId } = useParams();
+const User = () => {
+  const { userId } = useParams();
 
   // If there is no `profileId` in the URL as a parameter, execute the `QUERY_ME` query instead for the logged in user's information
   const { loading, data } = useQuery(
-    profileId ? QUERY_SINGLE_PROFILE : QUERY_ME,
+    userId ? QUERY_SINGLE_USER : QUERY_ME,
     {
-      variables: { profileId: profileId },
+      variables: { profileId: userId },
     }
   );
 
@@ -25,7 +25,7 @@ const Profile = () => {
   const profile = data?.me || data?.profile || {};
 
   // Use React Router's `<Redirect />` component to redirect to personal profile page if username is yours
-  if (Auth.loggedIn() && Auth.getProfile().data._id === profileId) {
+  if (Auth.loggedIn() && Auth.getProfile().data._id === userId) {
     return <Navigate to="/me" />;
   }
 
@@ -45,14 +45,14 @@ const Profile = () => {
   return (
     <div>
       <h2 className="card-header">
-        {profileId ? `${profile.name}'s` : 'Your'} friends have endorsed these
+        {userId ? `${profile.name}'s` : 'Your'} friends have endorsed these
         skills...
       </h2>
 
       {profile.skills?.length > 0 && (
         <SkillsList
           skills={profile.skills}
-          isLoggedInUser={!profileId && true}
+          isLoggedInUser={!userId && true}
         />
       )}
 
@@ -63,4 +63,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default User;
