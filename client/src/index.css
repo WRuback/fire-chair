@@ -5,11 +5,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
 /**
  * 1. Correct the line height in all browsers.
  * 2. Prevent adjustments of font size after orientation changes in iOS.
