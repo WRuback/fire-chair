@@ -10,7 +10,9 @@ import { QUERY_SINGLE_USER, QUERY_ME } from '../utils/queries';
 
 import Auth from '../utils/auth';
 
+
 const Profile = () => {
+
   const { userId } = useParams();
 
   // If there is no `profileId` in the URL as a parameter, execute the `QUERY_ME` query instead for the logged in user's information
@@ -62,4 +64,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default User;
