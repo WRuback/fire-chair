@@ -2,24 +2,29 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 
-import { ADD_SKILL } from '../../utils/mutations';
+import { ADD_TO_DECK, ADD_PROMPT } from '../../utils/mutations';
 
 import Auth from '../../utils/auth';
 
-const SkillForm = ({ profileId }) => {
-  const [skill, setSkill] = useState('');
+const DeckForm = () => {
+  const masterDeck = false;
+  const [prompt, setPrompt] = useState('');
 
-  const [addSkill, { error }] = useMutation(ADD_SKILL);
+  const [addToDeck, { error }] = useMutation(ADD_TO_DECK);
+  const [addPrompt, { err }] = useMutation(ADD_PROMPT);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const data = await addSkill({
-        variables: { profileId, skill },
-      });
+        const { promptData } = await addPrompt({
+            variables: {prompt, masterDeck}
+        });
+        const data = await addToDeck({
+            variables: {promptData},
+        });
 
-      setSkill('');
+        setPrompt('');
     } catch (err) {
       console.error(err);
     }
@@ -37,9 +42,9 @@ const SkillForm = ({ profileId }) => {
           <div className="col-12 col-lg-9">
             <input
               placeholder="Endorse some skills..."
-              value={skill}
+              value={prompt}
               className="form-input w-100"
-              onChange={(event) => setSkill(event.target.value)}
+              onChange={(event) => setPrompt(event.target.value)}
             />
           </div>
 
@@ -56,7 +61,7 @@ const SkillForm = ({ profileId }) => {
         </form>
       ) : (
         <p>
-          You need to be logged in to endorse skills. Please{' '}
+          You need to be logged in to create prompts. Please{' '}
           <Link to="/login">login</Link> or <Link to="/signup">signup.</Link>
         </p>
       )}
@@ -64,4 +69,4 @@ const SkillForm = ({ profileId }) => {
   );
 };
 
-export default SkillForm;
+export default DeckForm;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Logo from "../Header/Firechair_Logo.png"
 
 import Auth from '../../utils/auth';
 
@@ -9,23 +10,25 @@ const Header = () => {
     Auth.logout();
   };
   return (
-    <header className="bg-info text-dark mb-4 py-3 display-flex align-center">
-      <div className="container flex-column justify-space-between-lg justify-center align-center text-center">
-        <Link className="text-dark" to="/">
-          <h1 className="m-0" style={{ fontSize: '3rem' }}>
-            Tech Friends
+    <header className="bg-dark text-light mb-4 py-3 display-flex align-end">
+      
+      <div className='container flex-column justify-start'>
+        <img src={Logo} width={90} height={90} />  
+        <Link className="text-danger display-flex align-center" to="/">
+          <h1 className="m-0 vertical align-middle" style={{ fontSize: '2rem' }}>
+            Fire Chair
           </h1>
         </Link>
-        <p className="m-0" style={{ fontSize: '1.75rem', fontWeight: '700' }}>
-          Meet your new programming pals.
-        </p>
-        <div>
+      </div>
+      
+      <div className="container flex-column justify-space-between-lg justify-center align-end text-center ">
+        <div className='justify-end align-right'>
           {Auth.loggedIn() ? (
             <>
-              <Link className="btn btn-lg btn-primary m-2" to="/me">
+              <Link className="btn btn-sm btn-warning m-2 float" to="/me">
                 View My Profile
               </Link>
-              <button className="btn btn-lg btn-light m-2" onClick={logout}>
+              <button className="btn btn-sm btn-warning m-2" onClick={logout}>
                 Logout
               </button>
               <button className="btn btn-lg btn-light m-2" >
@@ -34,10 +37,10 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Link className="btn btn-lg btn-primary m-2" to="/login">
+              <Link className="btn btn-sm btn-warning m-2" to="/login">
                 Login
               </Link>
-              <Link className="btn btn-lg btn-light m-2" to="/signup">
+              <Link className="btn btn-sm btn-warning m-2" to="/signup">
                 Signup
               </Link>
               <button className="btn btn-lg btn-light m-2" data-bs-toggle="modal" data-bs-target="#rulesModal">
