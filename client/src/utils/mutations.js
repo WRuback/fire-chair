@@ -25,22 +25,42 @@ mutation login($username: String!, $password: String!) {
 }
 `;
 
-export const ADD_SKILL = gql`
-  mutation addSkill($profileId: ID!, $skill: String!) {
-    addSkill(profileId: $profileId, skill: $skill) {
+export const ADD_TO_DECK = gql`
+  mutation addToDeck($promptId: ID!) {
+    addToDeck(promptId: $promptId) {
       _id
-      name
-      skills
+      username
+      deck
     }
   }
 `;
 
-export const REMOVE_SKILL = gql`
-  mutation removeSkill($skill: String!) {
-    removeSkill(skill: $skill) {
+export const REMOVE_FROM_DECK = gql`
+  mutation removeFromDeck($promptId: ID!) {
+    removeFromDeck(promptId: $promptId) {
       _id
-      name
-      skills
+      username
+      deck
+    }
+  }
+`;
+
+export const ADD_PROMPT = gql`
+  mutation addPrompt($promptText: String!, $masterDeck: Boolean!) {
+    addPrompt(promptText: $promptText, masterDeck: $masterDeck){
+      _id
+      promptText
+      masterDeck
+    }
+  }
+`;
+
+export const REMOVE_PROMPT = gql`
+  mutation removePrompt($promptId: ID!) {
+    removePrompt(promptId: $promptId) {
+      _id
+      promptText
+      masterDeck
     }
   }
 `;
