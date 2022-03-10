@@ -1,11 +1,13 @@
 const db = require('../config/connection');
 const { Prompt } = require('../models');
-const promptSeeds = require('./promptSeeds.json');
+const promptSeeds = require('./promptSeeds');
 
 db.once('open', async () => {
   try {
     await Prompt.deleteMany({});
-    await Prompt.create(promptSeeds);
+    for (const prompt of promptSeeds) {
+      await Prompt.create(prompt);
+    }
 
     console.log('all done!');
     process.exit(0);
