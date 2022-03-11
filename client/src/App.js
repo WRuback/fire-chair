@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useReducer } from 'react';
 import {
   ApolloClient,
   InMemoryCache,
@@ -41,12 +41,15 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+const reducer = (state, pair) => ({ ...state, ...pair });
+
 
 
 function App() {
+  const [gameData, setGameData] = useReducer(reducer, {gameState: 'NoGame'});
   return (
     <ApolloProvider client={client}>
-      <socketContext.Provider value={socket}>
+      <socketContext.Provider value={{socket,gameData,setGameData}}>
       <Router>
         <div className="flex-column justify-flex-start min-100-vh">
           <Header />
