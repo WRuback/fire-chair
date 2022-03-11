@@ -1,28 +1,59 @@
 const { generateRoomCode } = require('../utils/codeGen');
+
 class Game {
     constructor(host, useHostDeck, lobbyCode) {
         this.players = [host];
         this.lobbyCode = lobbyCode;
         this.gameState = 'lobby';
-        this.host = host;
+        this._hostName = host.username;
         this.useHostDeck = useHostDeck;
         this.currentRound = 0;
+        this.currentPrompt = '';
+        this._firechairName = '';
+        this.answers = {};
+        this.selections = {};
+        this.totalSelections = 0;
+    }
+    get host() {
+        return this.players.find(item => item.username === this._hostName);
+    }
+    set host(player) {
+        this._hostName = player.username;
+    }
+    get fireChair() {
+        return this.players.find(item => item.username === this._firechairName);
+    }
+    set fireChair(player) {
+        this._firechairName = player.username;
+    }
+    addOrUpdatePlayer(player, io) {
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].username === player.username) {
+                const checkStatus = io.sockets.sockets.get(this.players[i].socketId);
+                if (checkStatus) {
+                    this.players[i].socketID = player.socketID;
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        this.players.push(player);
+        return true;
+    }
+    newRound() {
         this.currentPrompt = '';
         this.firechair = '';
         this.answers = {};
         this.selections = {};
         this.totalSelections = 0;
+        this.gameState = "Select Prompt";
+
+        const newFireChair = game.players[Math.floor(Math.random() * game.players.length)];
+        game.fireChair = newFireChair;
+        game.currentRound = game.currentRound + 1;
     }
-    addOrUpdatePlayer(player) {
-        for (let i = 0; i < this.players.length; i++) {
-            if(this.players[i].username === player.username){
-                this.players[i].socketID = player.socketID;
-                return;
-            }
-        }
-        this.players.push(player);
-    }
-    clientData(){
+    clientData() {
         return {
             players: this.players,
             lobbyCode: this.lobbyCode,
@@ -37,61 +68,62 @@ class Game {
     }
 }
 
-const gameStore = {};
-
 function Player(username, socketID) {
     this.username = username;
     this.socketID = socketID;
     this.currentScore = 0;
 }
 
+const gameStore = {};
+
+
 function gameSystem(socket, io) {
     console.log(socket.id);
-    
-    socket.on('newLobby', (username, usingCustomDeck) => {
-        const host = new Player(username, usingCustomDeck, socket.id);
+
+    socket.on('newLobby', (username, usingCustomDeck, callBackError) => {
+        for (const room of socket.rooms) {
+            if (/^[A-Z]{4}$/.test(room)) {
+                callBackError('Already in a game!');
+                return;
+            }
+        }
+        const host = new Player(username, socket.id);
         const newRoom = generateRoomCode();
-        const newGame = new Game(newRoom, host);
+        const newGame = new Game(host, usingCustomDeck, newRoom);
         gameStore[newRoom] = newGame;
-        
+
         socket.join(newGame.lobbyCode);
-        socket.join(newGame.lobbyCode+'HOST');
         socket.join('inLobby');
         socket.emit('lobbyCreated', newRoom);
     });
-    
-    socket.on('joinLobby', (username, lobbyCode) => {
+
+    socket.on('joinLobby', (username, lobbyCode, callBackError) => {
         const game = gameStore[lobbyCode];
-        if(game){
-            game.addOrUpdatePlayer(new Player(username, socket.id));
-            socket.join(game.lobbyCode);
-            socket.join('inLobby');
-            socket.emit('lobbyJoined', game.lobbyCode, game.players);
-            socket.emit('lobbyUpdated', game.lobbyCode, game.players);
+        if (game) {
+            const playJoining = game.addOrUpdatePlayer(new Player(username, socket.id));
+            if (playJoining) {
+                socket.join(game.lobbyCode);
+                socket.join('inLobby');
+                socket.emit('lobbyJoined', game.clientData());
+                io.to(game.lobbyCode).emit('lobbyUpdated', game.clientData());
+            } else {
+                callBackError('Username Already Used.');
+            }
         };
     });
-    
+
     socket.on('startRound', (lobbyCode) => {
         const game = gameStore[lobbyCode];
-        if(game){
-            game.currentPrompt = '';
-            game.firechair = '';
-            game.answers = {};
-            game.selections = {};
-            game.totalSelections = 0;
-            game.gameState = "Select Prompt";
-
-            const fireChair = game.players[Math.floor(Math.random() * game.players.length)];
-            game.fireChair = fireChair;
-            game.currentRound = game.currentRound + 1;
+        if (game) {
+            game.newRound();
             io.to(lobbyCode).except(fireChair.socketID).emit('startingRound', game.clientData());
             io.to(fireChair.socketID).emit('requestPrompt', game.clientData());
         }
     });
-    
+
     socket.on('promptSelected', (lobbyCode, prompt) => {
         const game = gameStore[lobbyCode];
-        if(game){
+        if (game) {
             game.prompt = prompt;
             game.gameState = "Answer Prompt";
             io.to(lobbyCode).except(game.fireChair.socketID).emit('answerPrompt', game.clientData());
@@ -101,11 +133,11 @@ function gameSystem(socket, io) {
 
     socket.on('answerReceived', (lobbyCode, answer, username) => {
         const game = gameStore[lobbyCode];
-        if(game){
-            if(!game.answers[username]){
+        if (game) {
+            if (!game.answers[username]) {
                 game.answers[username] = answer;
-                if(game.answers.keys().length === game.players.length){
-                    for(const user in game.answers){
+                if (game.answers.keys().length === game.players.length) {
+                    for (const user in game.answers) {
                         game.selections[user] = 0;
                     }
                     game.gameState = "Select Answer";
@@ -118,11 +150,11 @@ function gameSystem(socket, io) {
 
     socket.on('selectReceived', (lobbyCode, selected, username) => {
         const game = gameStore[lobbyCode];
-        if(game){
-            if(!game.selections[username]){
+        if (game) {
+            if (!game.selections[username]) {
                 game.selections[username]++;
                 game.totalSelections++;
-                if(game.totalSelections === game.players.length-1){
+                if (game.totalSelections === game.players.length - 1) {
                     game.gameState = "Display Score";
                     io.to(lobbyCode).except(game.fireChair.socketID).emit('displaySelectionScore', game.clientData());
 
@@ -133,10 +165,10 @@ function gameSystem(socket, io) {
 
     socket.on('endGame', async (lobbyCode) => {
         const game = gameStore[lobbyCode];
-        if(game && game.host.socketID === socket.id){
+        if (game && game.host.socketID === socket.id) {
             io.to(lobbyCode).emit('gameOver', game.clientData());
             const players = await io.in(lobbyCode).fetchSockets();
-            for (player of players){
+            for (let player of players) {
                 player.leave(lobbyCode);
             }
             delete gameStore[lobbyCode];
@@ -145,13 +177,13 @@ function gameSystem(socket, io) {
 
     socket.on('disconnecting', async (reason) => {
         for (const room of socket.rooms) {
-            if ( /^[A-Z]{4}$/.test(room) ) {
+            if (/^[A-Z]{4}$/.test(room)) {
                 const connectedPlayers = await io.in(room).fetchSockets();
-                if(connectedPlayers.length<=1){
-                  delete gameStore[room];
-              }
+                if (connectedPlayers.length <= 1) {
+                    delete gameStore[room];
+                }
             }
-          }
+        }
     });
 };
 
