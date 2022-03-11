@@ -15,6 +15,8 @@ const Header = () => {
       
       <div className='container flex-column justify-start'>
         <Logo/>
+      </div>
+      <div className='container flex-column align-center'>
         <Link className="text-danger display-flex align-center" to="/">
           <h1 className="m-0 vertical align-middle" style={{ fontSize: '2rem' }}>
             Fire Chair

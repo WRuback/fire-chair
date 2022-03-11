@@ -13,6 +13,8 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import Lobby from './pages/Lobby';
+import Game from './pages/Game';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
@@ -69,6 +71,14 @@ function App() {
               <Route 
                 path="/profiles/:profileId"
                 element={<Profile />}
+              />
+              <Route 
+                path="/lobby/:lobbyId"
+                element={<Lobby />}
+              />
+              <Route 
+                path="/game/:lobbyId"
+                element={<Game />}
               />
             </Routes>
           </div>
