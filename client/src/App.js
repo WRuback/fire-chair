@@ -7,12 +7,14 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import {io} from 'socket.io-client';
+import {socket, socketContext} from './utils/socketContext';
 
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import Lobby from './pages/Lobby';
+import Game from './pages/Game';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
@@ -42,17 +44,9 @@ const client = new ApolloClient({
 
 
 function App() {
-  useEffect(()=>{
-    const socket = io('http://localhost:3001');
-    socket.on('connect',()=>{
-     console.log("Conect to server!");
-    });
-    socket.on('startGame',(game)=>{
-      console.log(game);
-     });
-  },[]);
   return (
     <ApolloProvider client={client}>
+      <socketContext.Provider value={socket}>
       <Router>
         <div className="flex-column justify-flex-start min-100-vh">
           <Header />
@@ -78,11 +72,20 @@ function App() {
                 path="/profiles/:profileId"
                 element={<Profile />}
               />
+              <Route 
+                path="/lobby/:lobbyId"
+                element={<Lobby />}
+              />
+              <Route 
+                path="/game/:lobbyId"
+                element={<Game />}
+              />
             </Routes>
           </div>
           <Footer />
         </div>
       </Router>
+      </socketContext.Provider>
     </ApolloProvider>
   );
 }
