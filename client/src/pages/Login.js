@@ -69,17 +69,20 @@ const Login = (props) => {
                   value={formState.password}
                   onChange={handleChange}
                 />
+                <div class="d-grid gap-2 d-md-block justify-space-between">
                 <button
-                  className="btn btn-block btn-danger"
+                  className="btn col-6 btn-danger"
                   style={{ cursor: 'pointer' }}
                   type="submit"
                 >
                   Submit
                 </button>
-                <Link className="btn btn-block btn-primary" 
+              
+                <Link className="btn col-6 btn-primary" 
                 to="/signup">
                 Don't have an account? Create on here:
                 </Link>
+                </div>
               </form>
             )}
 
