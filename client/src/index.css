@@ -23,6 +23,8 @@ html {
  */
 body {
   margin: 0;
+  background: rgb(31,32,32);
+background: linear-gradient(0deg, rgba(31,32,32,1) 6%, rgba(204,82,19,1) 100%);
 }
 
 /**
