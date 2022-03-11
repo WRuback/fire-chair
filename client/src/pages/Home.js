@@ -1,5 +1,6 @@
 import React from 'react';
 import ParticleBackground from 'react-particle-backgrounds'
+import { Link } from 'react-router-dom';
 
 
 const Home = () => {
@@ -34,8 +35,9 @@ const Home = () => {
 
       <div className="container">
         <div className="row">
-          <div className="col text-center">
-            <button className="align-self-end btn btn-danger btn-lg">Start Game</button>
+          <div className="d-grid gap-5 col-12 mx-auto">
+            <Link className="align-self-end btn btn-danger btn-lg py-5"to="/lobby"><h1>START GAME</h1></Link>
+            <Link className="align-self-end btn btn-danger btn-lg py-5"to="/lobby"><h1>JOIN GAME</h1></Link>
           </div>
         </div>
       </div>

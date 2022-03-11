@@ -8,7 +8,7 @@ const Logo = () => {
         <div className="logo-container">
             <div className="logo-avatar">
                 <a href="/">
-                    <img src={logo} width={90} height={90} />
+                    <img src={logo} width={90} height={90} alt="Logo" />
                 </a>
             </div>
 
