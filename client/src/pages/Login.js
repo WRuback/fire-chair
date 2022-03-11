@@ -63,14 +63,14 @@ const Login = (props) => {
                 />
                 <input
                   className="form-input"
-                  placeholder="******"
+                  placeholder="********"
                   name="password"
                   type="password"
                   value={formState.password}
                   onChange={handleChange}
                 />
                 <button
-                  className="btn btn-block btn-info"
+                  className="btn btn-block btn-danger"
                   style={{ cursor: 'pointer' }}
                   type="submit"
                 >
