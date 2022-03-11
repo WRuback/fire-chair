@@ -76,6 +76,10 @@ const Login = (props) => {
                 >
                   Submit
                 </button>
+                <Link className="btn btn-block btn-primary" 
+                to="/signup">
+                Don't have an account? Create on here:
+                </Link>
               </form>
             )}
 
