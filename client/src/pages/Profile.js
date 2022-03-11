@@ -10,7 +10,6 @@ import { QUERY_SINGLE_USER, QUERY_ME } from '../utils/queries';
 
 import Auth from '../utils/auth';
 
-
 const Profile = () => {
 
   const { userId } = useParams();
@@ -64,4 +63,8 @@ const Profile = () => {
   );
 };
 
+
+
+
 export default Profile;
+

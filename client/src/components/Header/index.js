@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Logo from "../Header/Firechair_Logo.png"
+
 
 import Auth from '../../utils/auth';
+import Logo from './Logo';
 
 const Header = () => {
   const logout = (event) => {
@@ -13,7 +14,7 @@ const Header = () => {
     <header className="bg-dark text-light mb-4 py-3 display-flex align-end">
       
       <div className='container flex-column justify-start'>
-        <img src={Logo} width={90} height={90} />  
+        <Logo/>
         <Link className="text-danger display-flex align-center" to="/">
           <h1 className="m-0 vertical align-middle" style={{ fontSize: '2rem' }}>
             Fire Chair
