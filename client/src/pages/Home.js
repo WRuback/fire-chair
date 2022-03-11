@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 
 const Home = () => {
-  const socket = useContext(socketContext);
+  const {socket,gameData,setGameData} = useContext(socketContext);
   const settings = {
     canvas: {
       canvasFillSpace: true,
@@ -34,9 +34,12 @@ const Home = () => {
   }
   useEffect(()=>{
     socket.on('connect',()=>{
+      const newData = {...gameData, gameState: "Testing", lobbyCode: "HIZE"};
       console.log('Connected to server with ID ' + socket.id);
+      console.log(newData);
+      setGameData(newData);
     })
-  }, [socket]);
+  }, [socket,setGameData,gameData]);
   return (
     <main>
 
@@ -49,6 +52,7 @@ const Home = () => {
         </div>
       </div>
       <ParticleBackground settings={settings} />
+      <p>{gameData.gameState}</p>
       <div className="flex-row justify-center">
         <div className="col-12 col-md-10 my-3">
         </div>
