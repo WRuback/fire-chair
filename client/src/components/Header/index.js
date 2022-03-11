@@ -32,7 +32,7 @@ const Header = () => {
               <button className="btn btn-sm btn-warning m-2" onClick={logout}>
                 Logout
               </button>
-              <button className="btn btn-lg btn-light m-2" >
+              <button className="btn btn-sm btn-danger m-2" data-bs-toggle="modal" data-bs-target="#rulesModal">
                 Rules
               </button>
             </>
@@ -44,27 +44,55 @@ const Header = () => {
               <Link className="btn btn-sm btn-warning m-2" to="/signup">
                 Signup
               </Link>
-              <button className="btn btn-lg btn-light m-2" data-bs-toggle="modal" data-bs-target="#rulesModal">
+              <button className="btn btn-sm btn-danger m-2" data-bs-toggle="modal" data-bs-target="#rulesModal">
                 Rules
               </button>
             </>
           )}
         </div>
-        <div class="modal fade" id="rulesModal" tabindex="-1" aria-labelledby="rulesModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title" id="exampleModalLabel">Instructions</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div className="modal fade" id="rulesModal" tabindex="-1" aria-labelledby="rulesModalLabel" aria-hidden="true">
+          <div className="modal-dialog modal-xl">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title text-dark" id="exampleModalLabel"><strong>Instructions</strong></h1>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div class="modal-body">
-                <h3>Overview</h3>
+              <div className="modal-body text-dark">
+                <h3><strong>Overview</strong></h3>
                 <p>Each round answer a question the player currently in the Fire Chair. Try to fool other players into thinking your response was written by the player currently in the Fire Chair</p>
-                <h3>Getting Started</h3>
-                <p>Sign Up </p>
+                <h3><strong>Getting Started</strong></h3>
+                <p>Sign Up and either create a new room or join a room to join a game</p>
+                <h3><strong>Game Play</strong></h3>
+                <div className='text-start'>
+                <h5 className='d-inline'><strong>Hot Seat Assignment & Card Assignment </strong></h5>
+                <p className='d-inline'>The game will randomly select a player to be the player in the Hot Seat.</p>
+                </div>
+                <div className='text-start'>
+                <h5 className='d-inline '><strong>Answer Prompt </strong></h5>
+                <p className='d-inline'>Everyone including the player in the Fire Chair is given 60 seconds to write and answer to the prompt selected. Remember to write your answer from the perspective of the person in the Fire Chair.</p>
+                </div>
+                <div className='text-start'>
+                <h5 className='d-inline '><strong>Guess </strong></h5>
+                <p className='d-inline'>After everyone has answered the prompt, players will be shown all the answers written by everyone and given 60 second to guess which answer they believe the person in the fire chair wrote. </p>
+                </div>
+                <div className='text-start'>
+                <h5 className='d-inline '><strong>Reveal and Scoring </strong></h5>
+                <p className='d-inline'>Once every player has guessed the game will show which answer was written by the Fire Chair and will award points based off the answers given and who guessed the the Fire Chairs answers correctly.</p>
+                </div>
+                <h3><strong>Scoring</strong></h3>
+                <h5><strong>Player In the Fire Chair </strong></h5>
+                <p>1 point for each player that correctly guesses the answer you wrote</p>
+                <h5><strong>All Other Players </strong></h5>
+                <ul>
+                  <li>1 point for each player that guesses your answer instead of the Fire Chairs</li>
+                  <li>2 points for guessing the player in the Fire Chairs answer correctly</li>
+                  <li>4 points for responding with the same answer as the player in the Fire Chair</li>
+                </ul>
+                <h3>Winning</h3>
+                <p>First player to get to 25 points wins.</p>
               </div>
-              <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <div className="modal-footer">
+              <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
