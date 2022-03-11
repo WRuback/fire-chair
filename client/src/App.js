@@ -7,7 +7,7 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import {io} from 'socket.io-client';
+import {socket, socketContext} from './utils/socketContext';
 
 import Home from './pages/Home';
 import Profile from './pages/Profile';
@@ -44,17 +44,9 @@ const client = new ApolloClient({
 
 
 function App() {
-  useEffect(()=>{
-    const socket = io('http://localhost:3001');
-    socket.on('connect',()=>{
-     console.log("Conect to server!");
-    });
-    socket.on('startGame',(game)=>{
-      console.log(game);
-     });
-  },[]);
   return (
     <ApolloProvider client={client}>
+      <socketContext.Provider value={socket}>
       <Router>
         <div className="flex-column justify-flex-start min-100-vh">
           <Header />
@@ -93,6 +85,7 @@ function App() {
           <Footer />
         </div>
       </Router>
+      </socketContext.Provider>
     </ApolloProvider>
   );
 }

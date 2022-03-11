@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import ParticleBackground from 'react-particle-backgrounds'
+import { socketContext } from '../utils/socketContext';
 import { Link } from 'react-router-dom';
 
 
+
 const Home = () => {
+  const socket = useContext(socketContext);
   const settings = {
     canvas: {
       canvasFillSpace: true,
@@ -29,7 +32,11 @@ const Home = () => {
       opacityTransitionTime: 5000
     }
   }
-
+  useEffect(()=>{
+    socket.on('connect',()=>{
+      console.log('Connected to server with ID ' + socket.id);
+    })
+  }, [socket]);
   return (
     <main>
 
