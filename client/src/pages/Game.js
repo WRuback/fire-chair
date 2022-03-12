@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Input from '../components/Game/Input/Input';
 import MessageBoard from '../components/Game/MessageBoard/MessageBoard';
-import { socketContext } from '../../../utils/socketContext';
+import { socketContext } from '../utils/socketContext';
 
 const Game = () => {
     const socket = useContext(socketContext);
