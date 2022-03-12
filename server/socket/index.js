@@ -26,10 +26,10 @@ class Game {
     set fireChair(player) {
         this._firechairName = player.username;
     }
-    addOrUpdatePlayer(player, io) {
+    async addOrUpdatePlayer(player, io) {
         for (let i = 0; i < this.players.length; i++) {
             if (this.players[i].username === player.username) {
-                const checkStatus = io.sockets.sockets.get(this.players[i].socketId);
+                const checkStatus = io.to(this.players[i].socketId).fetchSockets();
                 if (checkStatus) {
                     this.players[i].socketID = player.socketID;
                     return true;
@@ -74,14 +74,19 @@ function Player(username, socketID) {
     this.socketID = socketID;
     this.currentScore = 0;
 }
-
-const testGame = new Game ({}, false, 'ABCD');
+const testplayer = new Player("Testman","weertetufghft");
+const testGame = new Game (testplayer, false, 'ABCD');
 const gameStore = {ABCD: testGame};
 
 
 function gameSystem(socket, io) {
     console.log(socket.id);
-
+    socket.on('CONNECTTOSERVER', (lobbyCode, username) =>{
+        if(gameStore[lobbyCode].players.find(item=>item.username===username)){
+            gameStore[lobbyCode].addOrUpdatePlayer(new Player(username, socket.id),io);
+            console.log(gameStore[lobbyCode].clientData());
+        }
+    });
     socket.on('newLobby', (username, usingCustomDeck, callBackError) => {
         for (const room of socket.rooms) {
             if (/^[A-Z]{4}$/.test(room)) {
@@ -102,7 +107,7 @@ function gameSystem(socket, io) {
     socket.on('joinLobby', (username, lobbyCode, callBackError) => {
         const game = gameStore[lobbyCode];
         if (game) {
-            const playJoining = game.addOrUpdatePlayer(new Player(username, socket.id));
+            const playJoining = game.addOrUpdatePlayer(new Player(username, socket.id),io);
             if (playJoining) {
                 socket.join(game.lobbyCode);
                 socket.join('inLobby');

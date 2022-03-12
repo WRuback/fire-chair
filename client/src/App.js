@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import {
   ApolloClient,
   InMemoryCache,
@@ -46,7 +46,10 @@ const reducer = (state, pair) => ({ ...state, ...pair });
 
 
 function App() {
-  const [gameData, setGameData] = useReducer(reducer, {gameState: 'Testing'});
+  const [gameData, setGameData] = useReducer(reducer, {gameState: 'Testing',lobbyCode: 'ABCD'});
+  useEffect(()=>{
+    socket.emit('CONNECTTOSERVER', gameData.lobbyCode, 'Testman');
+  },[])
   return (
     <ApolloProvider client={client}>
       <socketContext.Provider value={{socket,gameData,setGameData}}>
