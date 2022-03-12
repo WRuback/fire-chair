@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { socketContext } from '../../../utils/socketContext';
 
-const Answer = ({lobbyCode, answerChoice, username}) => {
+function Answer({lobbyCode, answerChoice, username}){
     const socket = useContext(socketContext);
 
     const handleAnswerSelection = () => {
