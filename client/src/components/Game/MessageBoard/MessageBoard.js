@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Answer from '../components/Game/Answer/Answer';
+import Answer from '../Answer/Answer';
 import { socketContext } from '../../../utils/socketContext';
 
 const MessageBoard = () => {
