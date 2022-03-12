@@ -46,7 +46,7 @@ const reducer = (state, pair) => ({ ...state, ...pair });
 
 
 function App() {
-  const [gameData, setGameData] = useReducer(reducer, {gameState: 'NoGame'});
+  const [gameData, setGameData] = useReducer(reducer, {gameState: 'Testing'});
   return (
     <ApolloProvider client={client}>
       <socketContext.Provider value={{socket,gameData,setGameData}}>

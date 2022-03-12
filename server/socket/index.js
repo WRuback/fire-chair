@@ -57,6 +57,7 @@ class Game {
         return {
             players: this.players,
             lobbyCode: this.lobbyCode,
+            gameState: this.gameState,
             host: this.host,
             useHostDeck: this.useHostDeck,
             currentRound: this.currentRound,
@@ -74,7 +75,8 @@ function Player(username, socketID) {
     this.currentScore = 0;
 }
 
-const gameStore = {};
+const testGame = new Game ({}, false, 'ABCD');
+const gameStore = {ABCD: testGame};
 
 
 function gameSystem(socket, io) {
@@ -113,53 +115,71 @@ function gameSystem(socket, io) {
     });
 
     socket.on('startRound', (lobbyCode) => {
+        //console.log(gameStore);
+        console.log('Working!');
         const game = gameStore[lobbyCode];
+        game.gameState = "Select Prompt";
+        console.log(game.clientData());
         if (game) {
-            game.newRound();
-            io.to(lobbyCode).except(fireChair.socketID).emit('startingRound', game.clientData());
-            io.to(fireChair.socketID).emit('requestPrompt', game.clientData());
+            io.to(socket.id).emit('requestPrompt', game.clientData());
+            // game.newRound();
+            // io.to(lobbyCode).except(fireChair.socketID).emit('startingRound', game.clientData());
+            // console.log(game.clientData());
+            // io.to(fireChair.socketID).emit('requestPrompt', game.clientData());
         }
     });
 
     socket.on('promptSelected', (lobbyCode, prompt) => {
+        console.log('Working!');
         const game = gameStore[lobbyCode];
+        game.gameState = "Answer Prompt";
+        console.log(game.clientData());
         if (game) {
-            game.prompt = prompt;
-            game.gameState = "Answer Prompt";
-            io.to(lobbyCode).except(game.fireChair.socketID).emit('answerPrompt', game.clientData());
-            io.to(game.fireChair.socketID).emit('answerPromptFC', game.clientData());
+            io.to(socket.id).emit('answerPrompt', game.clientData());
+            // game.prompt = prompt;
+            // game.gameState = "Answer Prompt";
+            // io.to(lobbyCode).except(game.fireChair.socketID).emit('answerPrompt', game.clientData());
+            // io.to(game.fireChair.socketID).emit('answerPromptFC', game.clientData());
         }
     });
 
     socket.on('answerReceived', (lobbyCode, answer, username) => {
+        console.log('Working!');
         const game = gameStore[lobbyCode];
+        game.gameState = "Select Answer";
+        console.log(game.clientData());
         if (game) {
-            if (!game.answers[username]) {
-                game.answers[username] = answer;
-                if (game.answers.keys().length === game.players.length) {
-                    for (const user in game.answers) {
-                        game.selections[user] = 0;
-                    }
-                    game.gameState = "Select Answer";
-                    io.to(lobbyCode).except(game.fireChair.socketID).emit('selectAnswers', game.clientData());
-                    io.to(game.fireChair.socketID).emit('awaitSelect', game.clientData());
-                }
-            }
+            io.to(socket.id).emit('selectAnswers', game.clientData());
+            // if (!game.answers[username]) {
+            //     game.answers[username] = answer;
+            //     if (game.answers.keys().length === game.players.length) {
+            //         for (const user in game.answers) {
+            //             game.selections[user] = 0;
+            //         }
+            //         game.gameState = "Select Answer";
+            //         io.to(lobbyCode).except(game.fireChair.socketID).emit('selectAnswers', game.clientData());
+            //         io.to(game.fireChair.socketID).emit('awaitSelect', game.clientData());
+            //     }
+            // }
         }
     });
 
     socket.on('selectReceived', (lobbyCode, selected, username) => {
+        console.log('Working!');
         const game = gameStore[lobbyCode];
+        game.gameState = "End of Test";
+        console.log(game.clientData());
         if (game) {
-            if (!game.selections[username]) {
-                game.selections[username]++;
-                game.totalSelections++;
-                if (game.totalSelections === game.players.length - 1) {
-                    game.gameState = "Display Score";
-                    io.to(lobbyCode).except(game.fireChair.socketID).emit('displaySelectionScore', game.clientData());
+            io.to(socket.id).emit('displaySelectionScore', game.clientData());
+            // if (!game.selections[username]) {
+            //     game.selections[username]++;
+            //     game.totalSelections++;
+            //     if (game.totalSelections === game.players.length - 1) {
+            //         game.gameState = "Display Score";
+            //         io.to(lobbyCode).except(game.fireChair.socketID).emit('displaySelectionScore', game.clientData());
 
-                }
-            }
+            //     }
+            // }
         }
     });
 
