@@ -48,6 +48,8 @@ const Home = () => {
           <div className="d-grid gap-5 col-12 mx-auto">
             <Link className="align-self-end btn btn-danger btn-lg py-5"to="/lobby"><h1>START GAME</h1></Link>
             <Link className="align-self-end btn btn-danger btn-lg py-5"to="/lobby"><h1>JOIN GAME</h1></Link>
+            <Link className="align-self-end btn btn-danger btn-lg py-5"to="/game"><h1>TEST GAME</h1></Link>
+          
           </div>
         </div>
       </div>
