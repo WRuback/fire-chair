@@ -2,17 +2,17 @@ import React, { useContext, useEffect, useState } from 'react';
 import Answer from '../Answer/Answer';
 import { socketContext } from '../../../utils/socketContext';
 
-const MessageBoard = () => {
+const MessageBoard = ({ lobbyCode }) => {
     const socket = useContext(socketContext);
     const [answers, setAnswers] = useState([]);
     const [allReceived, setReceived] = useState(false);
-    let lobbyCode;
+
+    //Pull from localstorage or elsewhere
     let username;
 
     useEffect(() => {
         socket.on('selectAnswers', (clientData) => {
             setAnswers(clientData.answers);
-            lobbyCode = clientData.lobbyCode;
             setReceived(true);
         });
 
@@ -21,7 +21,7 @@ const MessageBoard = () => {
             setReceived(false);
         });
 
-    });
+    }, [socket]);
 
     return (
         <div className='messageDisplay container'>

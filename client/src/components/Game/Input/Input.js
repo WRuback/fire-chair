@@ -1,14 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { socketContext } from '../../../utils/socketContext';
 
-const Input = ({lobbyCode, username}) => {
+const Input = ({lobbyCode}) => {
     const socket = useContext(socketContext);
     const [answer, setAnswer] = useState('');
     const [disabled, setDisabled] = useState(false);
     
+    //Pull username from localStorage or session or prop
+    let username;
+
+    
     useEffect(() => {
-        socket.on('answerPrompt', setDisabled(false));
-    });
+        socket.on('answerPrompt', () => setDisabled(false));
+    }, [socket]);
 
     
     const handleAnswerSubmit = () => {
