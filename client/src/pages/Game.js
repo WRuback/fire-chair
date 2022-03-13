@@ -80,8 +80,10 @@ const Game = () => {
                 return <SelectAnswer lobbyId={lobbyId}></SelectAnswer>;
             case 'Select AnswerFC':
                 return <SelectAnswerFC lobbyId={lobbyId}></SelectAnswerFC>;
-            default:
+            case 'Display Score':
                 return <DisplayScore lobbyId={lobbyId}></DisplayScore>;
+            default:
+                return <p>Something has gone wrong</p>;
         }
     }
     return (
