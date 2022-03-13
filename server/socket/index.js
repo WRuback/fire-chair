@@ -43,15 +43,15 @@ class Game {
     }
     newRound() {
         this.currentPrompt = '';
-        this.firechair = '';
         this.answers = {};
         this.selections = {};
         this.totalSelections = 0;
         this.gameState = "Select Prompt";
 
-        const newFireChair = game.players[Math.floor(Math.random() * game.players.length)];
-        game.fireChair = newFireChair;
-        game.currentRound = game.currentRound + 1;
+        const newFireChair = this.players[Math.floor(Math.random() * this.players.length)];
+        console.log(newFireChair);
+        this.fireChair = newFireChair;
+        this.currentRound = this.currentRound + 1;
     }
     clientData() {
         return {
@@ -60,11 +60,18 @@ class Game {
             gameState: this.gameState,
             host: this.host,
             useHostDeck: this.useHostDeck,
+            currentPrompt: this.currentPrompt,
             currentRound: this.currentRound,
-            firechair: this.firechair,
+            fireChair: this.fireChair,
             answers: this.answers,
             selections: this.selections,
             totalSelections: this.totalSelections
+        }
+    }
+    clientDataFC() {
+        return {
+            ...this.clientData(),
+            gameState: this.gameState + 'FC'
         }
     }
 }
@@ -123,14 +130,11 @@ function gameSystem(socket, io) {
         //console.log(gameStore);
         console.log('Working!');
         const game = gameStore[lobbyCode];
-        game.gameState = "Select Prompt";
-        console.log(game.clientData());
         if (game) {
-            io.to(socket.id).emit('requestPrompt', game.clientData());
-            // game.newRound();
-            // io.to(lobbyCode).except(fireChair.socketID).emit('startingRound', game.clientData());
-            // console.log(game.clientData());
-            // io.to(fireChair.socketID).emit('requestPrompt', game.clientData());
+            game.newRound();
+            console.log(game.clientDataFC());
+            io.to(lobbyCode).except(game.fireChair.socketID).emit('requestPrompt', game.clientData());
+            io.to(game.fireChair.socketID).emit('requestPromptFC', game.clientDataFC());
         }
     });
 
@@ -138,6 +142,7 @@ function gameSystem(socket, io) {
         console.log('Working!');
         const game = gameStore[lobbyCode];
         game.gameState = "Answer Prompt";
+        game.currentPrompt = prompt;
         console.log(game.clientData());
         if (game) {
             io.to(socket.id).emit('answerPrompt', game.clientData());

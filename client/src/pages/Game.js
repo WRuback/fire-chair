@@ -5,6 +5,7 @@ import AnswerPrompt from '../components/Game/AnswerPrompt';
 import DisplayScore from '../components/Game/DisplayScores';
 import SelectAnswer from '../components/Game/SelectAnswer';
 import SelectPrompt from '../components/Game/SelectPrompt';
+import SelectPromptFC from '../components/Game/SelectPromptFC';
 // import Input from '../components/Game/Input/Input';
 // import MessageBoard from '../components/Game/MessageBoard/MessageBoard';
 import { socketContext } from '../utils/socketContext';
@@ -21,6 +22,9 @@ const Game = () => {
         socket.on('requestPrompt', clientData => {
             setGameData(clientData);
         });
+        socket.on('requestPromptFC', clientData => {
+            setGameData(clientData);
+        });
         socket.on('answerPrompt', clientData => {
             setGameData(clientData);
         });
@@ -32,6 +36,9 @@ const Game = () => {
         });
         return () =>{
             socket.off('requestPrompt', clientData => {
+                setGameData(clientData);
+            });
+            socket.off('requestPromptFC', clientData => {
                 setGameData(clientData);
             });
             socket.off('answerPrompt', clientData => {
@@ -58,6 +65,8 @@ const Game = () => {
                 return <button onClick={testStart}>StartGame</button>;
             case 'Select Prompt':
                 return <SelectPrompt lobbyId={lobbyId}></SelectPrompt>;
+            case 'Select PromptFC':
+                return <SelectPromptFC lobbyId={lobbyId}></SelectPromptFC>;
             case 'Answer Prompt':
                 return <AnswerPrompt lobbyId={lobbyId}></AnswerPrompt>;
             case 'Select Answer':
