@@ -53,6 +53,11 @@ class Game {
         this.fireChair = newFireChair;
         this.currentRound = this.currentRound + 1;
     }
+    countScores() {
+        for (const selectionCount in this.selections){
+            this.players.find(item => item.username === selectionCount).currentScore += this.selections[selectionCount].length;
+        }
+    }
     clientData() {
         return {
             players: this.players,
@@ -127,7 +132,6 @@ function gameSystem(socket, io) {
     });
 
     socket.on('startRound', (lobbyCode) => {
-        //console.log(gameStore);
         console.log('Working!');
         const game = gameStore[lobbyCode];
         if (game) {
@@ -135,21 +139,19 @@ function gameSystem(socket, io) {
             console.log(game.clientDataFC());
             io.to(lobbyCode).except(game.fireChair.socketID).emit('requestPrompt', game.clientData());
             io.to(game.fireChair.socketID).emit('requestPromptFC', game.clientDataFC());
+            gameStore[lobbyCode] = game;
         }
     });
 
     socket.on('promptSelected', (lobbyCode, prompt) => {
         console.log('Working!');
         const game = gameStore[lobbyCode];
-        game.gameState = "Answer Prompt";
-        game.currentPrompt = prompt;
-        console.log(game.clientData());
         if (game) {
+            game.gameState = "Answer Prompt";
+            game.currentPrompt = prompt;
+            console.log(game.clientData());
             io.to(socket.id).emit('answerPrompt', game.clientData());
-            // game.prompt = prompt;
-            // game.gameState = "Answer Prompt";
-            // io.to(lobbyCode).except(game.fireChair.socketID).emit('answerPrompt', game.clientData());
-            // io.to(game.fireChair.socketID).emit('answerPromptFC', game.clientData());
+            gameStore[lobbyCode] = game;
         }
     });
 
@@ -161,7 +163,7 @@ function gameSystem(socket, io) {
                 game.answers[username] = answer;
                 if (Object.keys(game.answers).length === game.players.length) {
                     for (const user in game.answers) {
-                        game.selections[user] = 0;
+                        game.selections[user] = [];
                     }
                     game.gameState = "Select Answer";
                     console.log(game);
@@ -169,25 +171,26 @@ function gameSystem(socket, io) {
                     io.to(game.fireChair.socketID).emit('selectAnswersFC', game.clientDataFC());
                 }
             }
+            gameStore[lobbyCode] = game;
         }
     });
 
     socket.on('selectReceived', (lobbyCode, selected, username) => {
-        console.log('Working!');
+        console.log(selected);
         const game = gameStore[lobbyCode];
-        game.gameState = "End of Test";
-        console.log(game.clientData());
         if (game) {
-            io.to(socket.id).emit('displaySelectionScore', game.clientData());
-            // if (!game.selections[username]) {
-            //     game.selections[username]++;
-            //     game.totalSelections++;
-            //     if (game.totalSelections === game.players.length - 1) {
-            //         game.gameState = "Display Score";
-            //         io.to(lobbyCode).except(game.fireChair.socketID).emit('displaySelectionScore', game.clientData());
-
-            //     }
-            // }
+            if (game.selections[selected]) {
+                game.selections[selected].push(username);
+                game.totalSelections++;
+                if (game.totalSelections >= game.players.length - 1) {
+                    game.gameState = "Display Score";
+                    game.countScores();
+                    console.log(game);
+                    io.to(lobbyCode).except(game.fireChair.socketID).emit('displaySelectionScore', game.clientData());
+                    io.to(game.fireChair.socketID).emit('displaySelectionScore', game.clientData());
+                }
+            }
+            gameStore[lobbyCode] = game;
         }
     });
 
