@@ -156,21 +156,19 @@ function gameSystem(socket, io) {
     socket.on('answerReceived', (lobbyCode, answer, username) => {
         console.log('Working!');
         const game = gameStore[lobbyCode];
-        game.gameState = "Select Answer";
-        console.log(game.clientData());
         if (game) {
-            io.to(socket.id).emit('selectAnswers', game.clientData());
-            // if (!game.answers[username]) {
-            //     game.answers[username] = answer;
-            //     if (game.answers.keys().length === game.players.length) {
-            //         for (const user in game.answers) {
-            //             game.selections[user] = 0;
-            //         }
-            //         game.gameState = "Select Answer";
-            //         io.to(lobbyCode).except(game.fireChair.socketID).emit('selectAnswers', game.clientData());
-            //         io.to(game.fireChair.socketID).emit('awaitSelect', game.clientData());
-            //     }
-            // }
+            if (!game.answers[username]) {
+                game.answers[username] = answer;
+                if (Object.keys(game.answers).length === game.players.length) {
+                    for (const user in game.answers) {
+                        game.selections[user] = 0;
+                    }
+                    game.gameState = "Select Answer";
+                    console.log(game);
+                    io.to(lobbyCode).except(game.fireChair.socketID).emit('selectAnswers', game.clientData());
+                    io.to(game.fireChair.socketID).emit('selectAnswersFC', game.clientDataFC());
+                }
+            }
         }
     });
 

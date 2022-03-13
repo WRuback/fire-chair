@@ -8,8 +8,12 @@ function SelectAnswer({lobbyId}){
         socket.emit('selectReceived', lobbyId);
     }, [socket, lobbyId]);
 
+
     return (
+        <>
+        {Object.values(gameData.answers).map(item => <p>{item}</p>)}
         <button onClick={testSelect}>SelectAnswer</button>
+        </>
     );
 };
 
