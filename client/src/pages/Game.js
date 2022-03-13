@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import AnswerPrompt from '../components/Game/AnswerPrompt';
 import DisplayScore from '../components/Game/DisplayScores';
 import SelectAnswer from '../components/Game/SelectAnswer';
+import SelectAnswerFC from '../components/Game/SelectAnswerFC';
 import SelectPrompt from '../components/Game/SelectPrompt';
 import SelectPromptFC from '../components/Game/SelectPromptFC';
 // import Input from '../components/Game/Input/Input';
@@ -18,7 +19,7 @@ const Game = () => {
     //     socket.emit('');
     // });
 
-    useEffect(()=>{
+    useEffect(() => {
         socket.on('requestPrompt', clientData => {
             setGameData(clientData);
         });
@@ -31,10 +32,13 @@ const Game = () => {
         socket.on('selectAnswers', clientData => {
             setGameData(clientData);
         });
+        socket.on('selectAnswersFC', clientData => {
+            setGameData(clientData);
+        });
         socket.on('displaySelectionScore', clientData => {
             setGameData(clientData);
         });
-        return () =>{
+        return () => {
             socket.off('requestPrompt', clientData => {
                 setGameData(clientData);
             });
@@ -45,6 +49,9 @@ const Game = () => {
                 setGameData(clientData);
             });
             socket.off('selectAnswers', clientData => {
+                setGameData(clientData);
+            });
+            socket.off('selectAnswersFC', clientData => {
                 setGameData(clientData);
             });
             socket.off('displaySelectionScore', clientData => {
@@ -58,7 +65,7 @@ const Game = () => {
     }, [socket, lobbyId]);
 
 
-    const testSwitch=() => {
+    const testSwitch = () => {
         console.log(gameData.gameState);
         switch (gameData.gameState) {
             case 'Testing':
@@ -71,13 +78,15 @@ const Game = () => {
                 return <AnswerPrompt lobbyId={lobbyId}></AnswerPrompt>;
             case 'Select Answer':
                 return <SelectAnswer lobbyId={lobbyId}></SelectAnswer>;
+            case 'Select AnswerFC':
+                return <SelectAnswerFC lobbyId={lobbyId}></SelectAnswerFC>;
             default:
                 return <DisplayScore lobbyId={lobbyId}></DisplayScore>;
         }
     }
     return (
         <>
-        {testSwitch()}
+            {testSwitch()}
         </>
     );
 };
