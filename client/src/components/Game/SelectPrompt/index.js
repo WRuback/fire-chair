@@ -2,14 +2,13 @@ import React, { useContext, useCallback } from 'react';
 import { socketContext } from '../../../utils/socketContext';
 
 function SelectPrompt({lobbyId}){
-    const {socket,gameData} = useContext(socketContext);
-
-    const TestPrompt = useCallback(() => {
-        socket.emit('promptSelected', lobbyId);
-    }, [socket, lobbyId]);
+    const {gameData} = useContext(socketContext);
 
     return (
-        <button onClick={TestPrompt}>SelectPrompt</button>
+        <>
+        <h1> {gameData.fireChair.username} is in the fire Chair!</h1>
+        <p> Please wait for them to select a prompt.</p>
+        </>
     );
 };
 
