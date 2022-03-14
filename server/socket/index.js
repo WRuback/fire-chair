@@ -1,5 +1,5 @@
 const { generateRoomCode } = require('../utils/codeGen');
-
+const { User } = require('../models');
 class Game {
     constructor(host, useHostDeck, lobbyCode) {
         this.players = [host];
@@ -54,7 +54,7 @@ class Game {
         this.currentRound = this.currentRound + 1;
     }
     countScores() {
-        for (const selectionCount in this.selections){
+        for (const selectionCount in this.selections) {
             this.players.find(item => item.username === selectionCount).currentScore += this.selections[selectionCount].length;
         }
     }
@@ -86,17 +86,28 @@ function Player(username, socketID) {
     this.socketID = socketID;
     this.currentScore = 0;
 }
-const testplayer = new Player("Testman","weertetufghft");
-const testGame = new Game (testplayer, false, 'ABCD');
-const gameStore = {ABCD: testGame};
+const testplayer = new Player("Testman", "weertetufghft");
+const testGame = new Game(testplayer, false, 'ABCD');
+const gameStore = { ABCD: testGame };
 
 
 function gameSystem(socket, io) {
     console.log(socket.id);
-    socket.on('CONNECTTOSERVER', (lobbyCode, username) =>{
-        if(gameStore[lobbyCode].players.find(item=>item.username===username)){
-            gameStore[lobbyCode].addOrUpdatePlayer(new Player(username, socket.id),io);
-            console.log(gameStore[lobbyCode].clientData());
+    socket.on('CONNECTTOSERVER', async (lobbyCode, userToken, callBack) => {
+        if (!userToken) {
+            return;
+        }
+        const user = await User.findById(userToken.data._id);
+        const username = user.username;
+        console.log(user, username);
+        if (gameStore[lobbyCode].players.find(item => item.username === username)) {
+            gameStore[lobbyCode].addOrUpdatePlayer(new Player(username, socket.id), io);
+            const isFireChair = (gameStore[lobbyCode].gameState === "Select Prompt" ||
+                gameStore[lobbyCode].gameState === "Select Answer") &&
+                gameStore[lobbyCode].fireChair.username === username;
+            const dataPackage = isFireChair ? gameStore[lobbyCode].clientDataFC(): gameStore[lobbyCode].clientData();
+            console.log(dataPackage);
+            callBack(dataPackage);
         }
     });
     socket.on('newLobby', (username, usingCustomDeck, callBackError) => {
@@ -119,7 +130,7 @@ function gameSystem(socket, io) {
     socket.on('joinLobby', (username, lobbyCode, callBackError) => {
         const game = gameStore[lobbyCode];
         if (game) {
-            const playJoining = game.addOrUpdatePlayer(new Player(username, socket.id),io);
+            const playJoining = game.addOrUpdatePlayer(new Player(username, socket.id), io);
             if (playJoining) {
                 socket.join(game.lobbyCode);
                 socket.join('inLobby');

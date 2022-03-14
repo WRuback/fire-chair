@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 
 const Home = () => {
-  const {socket,gameData,setGameData} = useContext(socketContext);
+  const {gameData} = useContext(socketContext);
   const settings = {
     canvas: {
       canvasFillSpace: true,
@@ -32,14 +32,7 @@ const Home = () => {
       opacityTransitionTime: 5000
     }
   }
-  useEffect(()=>{
-    socket.on('connect',()=>{
-      const newData = {...gameData, gameState: "Testing", lobbyCode: "HIZE"};
-      console.log('Connected to server with ID ' + socket.id);
-      console.log(newData);
-      setGameData(newData);
-    })
-  }, [socket,setGameData,gameData]);
+
   return (
     <main>
 
@@ -48,13 +41,12 @@ const Home = () => {
           <div className="d-grid gap-5 col-12 mx-auto">
             <Link className="align-self-end btn btn-danger btn-lg py-5"to="/lobby"><h1>START GAME</h1></Link>
             <Link className="align-self-end btn btn-danger btn-lg py-5"to="/lobby"><h1>JOIN GAME</h1></Link>
-            <Link className="align-self-end btn btn-danger btn-lg py-5"to="/game"><h1>TEST GAME</h1></Link>
+            <Link className="align-self-end btn btn-danger btn-lg py-5"to={`/game/${gameData.lobbyCode}`}><h1>TEST GAME</h1></Link>
           
           </div>
         </div>
       </div>
       <ParticleBackground settings={settings} />
-      <p>{gameData.gameState}</p>
       <div className="flex-row justify-center">
         <div className="col-12 col-md-10 my-3">
         </div>
