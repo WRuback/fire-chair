@@ -1,12 +1,14 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import ParticleBackground from 'react-particle-backgrounds'
 import { socketContext } from '../utils/socketContext';
-import { Link } from 'react-router-dom';
-
-
+import { Link, Navigate } from 'react-router-dom';
+import auth from '../utils/auth';
 
 const Home = () => {
-  const {socket,gameData,setGameData} = useContext(socketContext);
+  const {socket, gameData} = useContext(socketContext);
+  const [ID, setID] = useState('');
+  const [validCode, setvalidCode] = useState(false);
+  const [error, setError] = useState('');
   const settings = {
     canvas: {
       canvasFillSpace: true,
@@ -32,29 +34,51 @@ const Home = () => {
       opacityTransitionTime: 5000
     }
   }
-  useEffect(()=>{
-    socket.on('connect',()=>{
-      const newData = {...gameData, gameState: "Testing", lobbyCode: "HIZE"};
-      console.log('Connected to server with ID ' + socket.id);
-      console.log(newData);
-      setGameData(newData);
-    })
-  }, [socket,setGameData,gameData]);
+
+  function handleChange(e){
+    setID(e.target.value);
+    if(/^[A-Za-z]{4}$/.test(e.target.value)){
+      setvalidCode(true);
+    }else{
+      setvalidCode(false);
+    }
+  }
+
+  function attemptJoin(lobbyCode){
+    lobbyCode ? window.location.assign(`lobby/${lobbyCode}`) : setError("Could not find lobby");
+  }
+  function joinLobby(){
+    console.log("running function");
+    socket.emit('joinLobby', auth.getUsername(), ID.toUpperCase(), attemptJoin);
+  }
+
+  // function attemptJoin(lobbyCode){
+  //   lobbyCode ? window.location.assign(`lobby/${lobbyCode}`) : setError("Could not find lobby");
+  // }
+  // function joinLobby(){
+  //   console.log("running function");
+  //   socket.emit('joinLobby', auth.getUsername(), ID.toUpperCase(), attemptJoin);
+  // }
+
   return (
     <main>
-
       <div className="container">
         <div className="row">
           <div className="d-grid gap-5 col-12 mx-auto">
-            <Link className="align-self-end btn btn-danger btn-lg py-5"to="/lobby"><h1>START GAME</h1></Link>
-            <Link className="align-self-end btn btn-danger btn-lg py-5"to="/lobby"><h1>JOIN GAME</h1></Link>
-            <Link className="align-self-end btn btn-danger btn-lg py-5"to="/game"><h1>TEST GAME</h1></Link>
+            {auth.loggedIn() ? <>
+            <input onChange={handleChange} value={ID}></input>
+            <button className="align-self-end btn btn-danger btn-lg py-5" onClick={joinLobby} disabled={!validCode}><h1>JOIN GAME</h1></button>
+            <button className="align-self-end btn btn-danger btn-lg py-5"><h1>HOST GAME</h1></button>
+            <Link className="align-self-end btn btn-danger btn-lg py-5" to={`/game/${gameData.lobbyCode}`}><h1>TEST GAME</h1></Link>
+            </> : <>
+            <Link className="align-self-end btn btn-danger btn-lg py-5"to="/login"><h1>Login or Signup to play!</h1></Link>
+            
+            </>}
           
           </div>
         </div>
       </div>
       <ParticleBackground settings={settings} />
-      <p>{gameData.gameState}</p>
       <div className="flex-row justify-center">
         <div className="col-12 col-md-10 my-3">
         </div>

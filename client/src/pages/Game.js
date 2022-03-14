@@ -68,7 +68,7 @@ const Game = () => {
     const testSwitch = () => {
         console.log(gameData.gameState);
         switch (gameData.gameState) {
-            case 'Testing':
+            case 'lobby':
                 return <button onClick={testStart}>StartGame</button>;
             case 'Select Prompt':
                 return <SelectPrompt lobbyId={lobbyId}></SelectPrompt>;

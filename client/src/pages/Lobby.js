@@ -1,24 +1,20 @@
 import React from 'react';
-// import lobbyCode from 
+import auth from '../utils/auth';
+import { Navigate, useParams } from 'react-router-dom';
+import { socketContext } from '../utils/socketContext';
 
 const Lobby = () => {
     return (
-        <main>
-            {/* { Game code } */}
-                <div className='gameCode'>
-                {/* Invite Code */}
-                    <h1>Invite Code</h1>
-                {/* Window with dynamic code or variable */}
-                    <div className='container-lg'>
-                        {/*invite code */}
-                    </div>
-                </div>
-
-            {/* { Lobby Window} */}
-
-            {/* { Start Button } */}
-           
-        </main>
+        <>
+            <p>Is this working?</p>
+            {auth.loggedIn() ? 
+            <>
+                <p>Welcome! Lets get a lobby going!</p>
+            </>:
+            <>
+                <Navigate to="/login" />
+            </>}
+        </>
     );
 };
 
