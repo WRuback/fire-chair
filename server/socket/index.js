@@ -88,25 +88,19 @@ function Player(username, socketID) {
 }
 const testplayer = new Player("Testman", "weertetufghft");
 const testGame = new Game(testplayer, false, 'ABCD');
-const gameStore = { ABCD: testGame };
+let gameStore = { ABCD: testGame };
 
 
 function gameSystem(socket, io) {
     console.log(socket.id);
-    socket.on('CONNECTTOSERVER', async (lobbyCode, userToken, callBack) => {
-        if (!userToken) {
-            return;
-        }
-        const user = await User.findById(userToken.data._id);
-        const username = user.username;
-        console.log(user, username);
+    socket.on('CONNECTTOSERVER', (lobbyCode, username, callBack) => {
+        console.log(gameStore);
         if (gameStore[lobbyCode].players.find(item => item.username === username)) {
             gameStore[lobbyCode].addOrUpdatePlayer(new Player(username, socket.id), io);
             const isFireChair = (gameStore[lobbyCode].gameState === "Select Prompt" ||
                 gameStore[lobbyCode].gameState === "Select Answer") &&
                 gameStore[lobbyCode].fireChair.username === username;
             const dataPackage = isFireChair ? gameStore[lobbyCode].clientDataFC(): gameStore[lobbyCode].clientData();
-            console.log(dataPackage);
             callBack(dataPackage);
         }
     });
@@ -127,19 +121,18 @@ function gameSystem(socket, io) {
         socket.emit('lobbyCreated', newRoom);
     });
 
-    socket.on('joinLobby', (username, lobbyCode, callBackError) => {
+    socket.on('joinLobby', async (username, lobbyCode, callBack) => {
         const game = gameStore[lobbyCode];
         if (game) {
-            const playJoining = game.addOrUpdatePlayer(new Player(username, socket.id), io);
+            const playJoining = await gameStore[lobbyCode].addOrUpdatePlayer(new Player(username, socket.id), io);
             if (playJoining) {
                 socket.join(game.lobbyCode);
-                socket.join('inLobby');
-                socket.emit('lobbyJoined', game.clientData());
-                io.to(game.lobbyCode).emit('lobbyUpdated', game.clientData());
+                callBack(lobbyCode);
             } else {
-                callBackError('Username Already Used.');
+                callBack(false);
             }
         };
+        console.log(gameStore);
     });
 
     socket.on('startRound', (lobbyCode) => {
@@ -222,7 +215,13 @@ function gameSystem(socket, io) {
             if (/^[A-Z]{4}$/.test(room)) {
                 const connectedPlayers = await io.in(room).fetchSockets();
                 if (connectedPlayers.length <= 1) {
-                    delete gameStore[room];
+                    setTimeout(() => {
+                        console.log('Checkdelete');
+                        if (connectedPlayers.length <= 0) {
+                        delete gameStore[room];
+                        console.log(room+" deleted.");
+                        }
+                    }, 60*1000);
                 }
             }
         }

@@ -49,7 +49,7 @@ const reducer = (state, pair) => ({ ...state, ...pair });
 function App() {
   const [gameData, setGameData] = useReducer(reducer, {gameState: 'Testing',lobbyCode: 'ABCD'});
   useEffect(()=>{
-    socket.emit('CONNECTTOSERVER', gameData.lobbyCode, auth.loggedIn()?auth.getUser():"", (data) => setGameData(data));
+    socket.emit('CONNECTTOSERVER', gameData.lobbyCode, auth.getUsername(), (data) => setGameData(data));
   },[])
   return (
     <ApolloProvider client={client}>
