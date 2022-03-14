@@ -45,7 +45,13 @@ const Home = () => {
   }
 
   function attemptJoin(lobbyCode) {
-    lobbyCode ? window.location.assign(`lobby/${lobbyCode}`) : setError("Could not find lobby");
+    if (lobbyCode) {
+      setGameData({ ...gameData, lobbyCode });
+      localStorage.setItem('lobbycode', lobbyCode);
+      window.location.assign(`lobby/${lobbyCode}`)
+    } else {
+      setError("Could not find lobby");
+    }
   }
   function joinLobby(lobbyCode) {
     socket.emit('joinLobby', auth.getUsername(), lobbyCode, attemptJoin);

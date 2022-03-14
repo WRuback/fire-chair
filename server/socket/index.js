@@ -128,7 +128,6 @@ function gameSystem(socket, io) {
 
         socket.join(newGame.lobbyCode);
         socket.join('inLobby');
-        socket.emit('lobbyCreated', newRoom);
         callBack(gameStore[newRoom].lobbyCode);
     });
 
@@ -139,6 +138,7 @@ function gameSystem(socket, io) {
             if (playJoining) {
                 socket.join(game.lobbyCode);
                 callBack(lobbyCode);
+                io.to(lobbyCode).emit('lobbyUpdate', gameStore[lobbyCode]);
             } else {
                 callBack(false);
             }
@@ -151,12 +151,14 @@ function gameSystem(socket, io) {
         if (game) {
             if(username === game.host.username){
                 const players = await io.in(lobbyCode).fetchSockets();
+                io.to(lobbyCode).emit('lobbyUpdate', {gameState: 'Testing',lobbyCode: null});
                 for (let player of players) {
                     player.leave(lobbyCode);
                 }
                 delete gameStore[lobbyCode];
             }else{
-                gameStore[lobbyCode].players = game.player.filter(item => item.username !== username);
+                gameStore[lobbyCode].players = game.players.filter(item => item.username !== username);
+                io.to(lobbyCode).emit('lobbyUpdate', gameStore[lobbyCode]);
                 if(gameStore[lobbyCode].players.length === 0){
                     delete gameStore[lobbyCode];
                 }
@@ -185,7 +187,7 @@ function gameSystem(socket, io) {
             game.gameState = "Answer Prompt";
             game.currentPrompt = prompt;
             console.log(game.clientData());
-            io.to(socket.id).emit('answerPrompt', game.clientData());
+            io.to(lobbyCode).emit('answerPrompt', game.clientData());
             gameStore[lobbyCode] = game;
         }
     });
