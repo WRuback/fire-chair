@@ -94,20 +94,30 @@ const gameStore = { ABCD: testGame };
 function gameSystem(socket, io) {
     console.log(socket.id);
     socket.on('CONNECTTOSERVER', (lobbyCode, username, callBack) => {
-        console.log(gameStore[lobbyCode].clientData());
-        if (gameStore[lobbyCode].players.find(item => item.username === username)) {
-            gameStore[lobbyCode].addOrUpdatePlayer(new Player(username, socket.id), io);
-            const isFireChair = (gameStore[lobbyCode].gameState === "Select Prompt" ||
-                gameStore[lobbyCode].gameState === "Select Answer") &&
-                gameStore[lobbyCode].fireChair.username === username;
-            const dataPackage = isFireChair ? gameStore[lobbyCode].clientDataFC(): gameStore[lobbyCode].clientData();
-            callBack(dataPackage);
+        try {
+            if (!lobbyCode) {
+                callBack({ gameState: null, lobbyCode: null });
+                return
+            }
+            console.log(gameStore);
+            if (gameStore[lobbyCode].players.find(item => item.username === username)) {
+                gameStore[lobbyCode].addOrUpdatePlayer(new Player(username, socket.id), io);
+                const isFireChair = (gameStore[lobbyCode].gameState === "Select Prompt" ||
+                    gameStore[lobbyCode].gameState === "Select Answer") &&
+                    gameStore[lobbyCode].fireChair.username === username;
+                socket.join(lobbyCode);
+                console.log(lobbyCode);
+                const dataPackage = isFireChair ? gameStore[lobbyCode].clientDataFC() : gameStore[lobbyCode].clientData();
+                callBack(dataPackage);
+            }
+        } catch {
+            callBack({ gameState: null, lobbyCode: null });
         }
     });
-    socket.on('newLobby', (username, usingCustomDeck, callBackError) => {
+    socket.on('newLobby', (username, usingCustomDeck, callBack) => {
         for (const room of socket.rooms) {
             if (/^[A-Z]{4}$/.test(room)) {
-                callBackError('Already in a game!');
+                callBack('');
                 return;
             }
         }
@@ -119,6 +129,7 @@ function gameSystem(socket, io) {
         socket.join(newGame.lobbyCode);
         socket.join('inLobby');
         socket.emit('lobbyCreated', newRoom);
+        callBack(gameStore[newRoom].lobbyCode);
     });
 
     socket.on('joinLobby', async (username, lobbyCode, callBack) => {
@@ -132,6 +143,26 @@ function gameSystem(socket, io) {
                 callBack(false);
             }
         };
+        console.log(gameStore);
+    });
+
+    socket.on('leaveLobby', async (username, lobbyCode, callBack) => {
+        const game = gameStore[lobbyCode];
+        if (game) {
+            if(username === game.host.username){
+                const players = await io.in(lobbyCode).fetchSockets();
+                for (let player of players) {
+                    player.leave(lobbyCode);
+                }
+                delete gameStore[lobbyCode];
+            }else{
+                gameStore[lobbyCode].players = game.player.filter(item => item.username !== username);
+                if(gameStore[lobbyCode].players.length === 0){
+                    delete gameStore[lobbyCode];
+                }
+            }
+        };
+        callBack(true);
         console.log(gameStore);
     });
 
@@ -215,13 +246,17 @@ function gameSystem(socket, io) {
             if (/^[A-Z]{4}$/.test(room)) {
                 const connectedPlayers = await io.in(room).fetchSockets();
                 if (connectedPlayers.length <= 1) {
-                    setTimeout(() => {
+                    console.log('setupdelete');
+                    console.log(room);
+                    setTimeout(async () => {
                         console.log('Checkdelete');
+                        console.log(room);
+                        const connectedPlayers = await io.in(room).fetchSockets();
                         if (connectedPlayers.length <= 0) {
-                        delete gameStore[room];
-                        console.log(room+" deleted.");
+                            delete gameStore[room];
+                            console.log(room + " deleted.");
                         }
-                    }, 60*1000);
+                    }, 5 * 1000);
                 }
             }
         }
