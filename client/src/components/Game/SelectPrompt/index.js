@@ -6,8 +6,8 @@ function SelectPrompt({lobbyId}){
 
     return (
         <>
-        <h1> {gameData.fireChair.username} is in the fire Chair!</h1>
-        <p> Please wait for them to select a prompt.</p>
+        <h1 className='text-light'> {gameData.fireChair.username} is in the fire Chair!</h1>
+        <p className='text-light'> Please wait for them to select a prompt.</p>
         </>
     );
 };

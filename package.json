@@ -16,5 +16,7 @@
   "devDependencies": {
     "concurrently": "^5.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "nodemon": "^2.0.15"
+  }
 }

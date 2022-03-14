@@ -25,10 +25,10 @@ function SelectAnswerFC({lobbyId}){
 
     return (
         <>
-            <h1> Which answer did {gameData.fireChair.username} select for the prompt '{gameData.currentPrompt}'</h1>
+            <h1 className='text-light'> Which answer did {gameData.fireChair.username} select for the prompt '{gameData.currentPrompt}'</h1>
             {Object.keys(gameData.answers).map(item => (
                 <>
-                    <button onClick={()=>{testSelect(item)}}>{gameData.answers[item]}</button>
+                    <button className="align-self-end btn btn-danger btn-lg py-5 m-1" onClick={()=>{testSelect(item)}}>{gameData.answers[item]}</button>
                 </>
             ))}
         </>
