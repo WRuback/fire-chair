@@ -88,13 +88,13 @@ function Player(username, socketID) {
 }
 const testplayer = new Player("Testman", "weertetufghft");
 const testGame = new Game(testplayer, false, 'ABCD');
-let gameStore = { ABCD: testGame };
+const gameStore = { ABCD: testGame };
 
 
 function gameSystem(socket, io) {
     console.log(socket.id);
     socket.on('CONNECTTOSERVER', (lobbyCode, username, callBack) => {
-        console.log(gameStore);
+        console.log(gameStore[lobbyCode].clientData());
         if (gameStore[lobbyCode].players.find(item => item.username === username)) {
             gameStore[lobbyCode].addOrUpdatePlayer(new Player(username, socket.id), io);
             const isFireChair = (gameStore[lobbyCode].gameState === "Select Prompt" ||
