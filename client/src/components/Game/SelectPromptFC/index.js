@@ -1,22 +1,42 @@
 import React, { useContext, useCallback, useState } from 'react';
 import { socketContext } from '../../../utils/socketContext';
+import { useQuery } from '@apollo/client';
+import { QUERY_PROMPTS } from '../../../utils/queries';
 
 function SelectPrompt({lobbyId}){
     const {socket,gameData} = useContext(socketContext);
+    const { loading, data } = useQuery(QUERY_PROMPTS);
+    const prompts = data?.prompts || [];
     
-    const TestPrompt = useCallback((promptt) => {
-        socket.emit('promptSelected', lobbyId, promptt);
+    const TestPrompt = useCallback((prompt) => {
+        socket.emit('promptSelected', lobbyId, prompt);
     }, [socket, lobbyId]);
-    
-    const prompts = ["What's my favorite food?", "What will a rob a bank to buy?", "Who do I bring with me to fight god?"]
+
+    const chosen = [];
+
+    let idx = 0;
+    while (idx < 3){
+        let temp = Math.floor(Math.random() * prompts.length);
+        if (prompts[temp] in chosen){
+            continue;
+        }
+        chosen.push(prompts[temp]);
+        idx++;
+    };
 
     return (
         <>
         <h1> You are in the fire Chair!</h1>
         <p> Please select a prompt.</p>
-        <button onClick={()=>{TestPrompt(prompts[0])}}>{prompts[0]}</button>
-        <button onClick={()=>{TestPrompt(prompts[1])}}>{prompts[1]}</button>
-        <button onClick={()=>{TestPrompt(prompts[2])}}>{prompts[2]}</button>
+        {loading ? (
+            <div>Getting Prompts...</div>
+        ) : (
+            <>
+            <button onClick={()=>{TestPrompt(chosen[0])}}>{chosen[0]}</button>
+            <button onClick={()=>{TestPrompt(chosen[1])}}>{chosen[1]}</button>
+            <button onClick={()=>{TestPrompt(chosen[2])}}>{chosen[2]}</button>
+            </>
+        )}
         </>
     );
 };
