@@ -47,9 +47,13 @@ const reducer = (state, pair) => ({ ...state, ...pair });
 
 
 function App() {
-  const [gameData, setGameData] = useReducer(reducer, {gameState: 'Testing',lobbyCode: 'ABCD'});
+  const [gameData, setGameData] = useReducer(reducer, {gameState: 'Testing',lobbyCode: localStorage.getItem('lobbycode')});
   useEffect(()=>{
-    socket.emit('CONNECTTOSERVER', gameData.lobbyCode, auth.getUsername(), (data) => setGameData(data));
+    console.log(gameData.lobbyCode);
+    socket.emit('CONNECTTOSERVER', gameData.lobbyCode, auth.getUsername(), (data) => {
+      localStorage.setItem('lobbycode', data.lobbyCode);
+      setGameData(data);
+    });
   },[])
   return (
     <ApolloProvider client={client}>
