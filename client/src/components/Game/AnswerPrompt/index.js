@@ -17,15 +17,15 @@ function AnswerPrompt({ lobbyId }) {
 
     return (
         <>
-            <h1>{gameData.currentPrompt}</h1>
+            <h1 className='text-light'>{gameData.currentPrompt}</h1>
             {!answerEntered ? (
                 <>
-                <input value={answer} onChange={handleChange}></input>
-                <button onClick={TestAnswer}>AnswerPrompt</button>
+                <input className='form-control' value={answer} onChange={handleChange}></input>
+                <button className="align-self-end btn btn-danger btn-lg" onClick={TestAnswer}>AnswerPrompt</button>
                 </>
             ):(
                 <>
-                    <p>Awaiting other player's answers.</p>
+                    <p className='text-light'>Awaiting other player's answers.</p>
                 </>
             )}
 

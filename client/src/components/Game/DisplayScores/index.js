@@ -9,11 +9,11 @@ function DisplayScore({lobbyId}){
 
     return (
         <>
-        <h1>Results:</h1>
+        <h1 className='text-light'>Results:</h1>
         {Object.keys(gameData.answers).map(item =>{
-            return <p>{item}: {gameData.answers[item]} - selected by {gameData.selections[item].join(", ")}</p>
+            return <p className='text-light'>{item}: {gameData.answers[item]} - selected by {gameData.selections[item].join(", ")}</p>
         })}
-        <button onClick={testStart}>Start New Round</button>
+        <button className="align-self-end btn btn-danger btn-lg py-5" onClick={testStart}>Start New Round</button>
         </>
     );
 };
