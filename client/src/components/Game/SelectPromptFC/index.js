@@ -34,11 +34,18 @@ function SelectPrompt({lobbyId}){
         {loading ? (
             <p>Pulling Prompts...</p>
         ) : (
-            <>
-            <button onClick={()=>{TestPrompt(chosen[0].promptText)}}>{chosen[0].promptText}</button>
-            <button onClick={()=>{TestPrompt(chosen[1].promptText)}}>{chosen[1].promptText}</button>
-            <button onClick={()=>{TestPrompt(chosen[2].promptText)}}>{chosen[2].promptText}</button>
-            </>
+            <div className='flex-row justify-space-between my-4'>
+                {chosen.map((prompt) => {
+                    return ( <div className='col-12 col-xl-6'>
+                        <div className='card mb-3'>
+                            <h4 className='card-header bg-dark text-light p-2 m-0 display-flex align-center'>
+                                <span>{prompt.promptText}</span>
+                                <button className='btn btn-sm btn-danger ml-auto' onClick={()=>{TestPrompt(prompt.promptText)}}>Choose Me!</button>
+                            </h4>
+                        </div>
+                    </div>)
+                })}
+            </div>
         )}
         
         </>

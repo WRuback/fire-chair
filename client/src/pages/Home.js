@@ -1,11 +1,11 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ParticleBackground from 'react-particle-backgrounds'
 import { socketContext } from '../utils/socketContext';
 import { Link, Navigate } from 'react-router-dom';
 import auth from '../utils/auth';
 
 const Home = () => {
-  const {socket, gameData} = useContext(socketContext);
+  const { socket, gameData, setGameData } = useContext(socketContext);
   const [ID, setID] = useState('');
   const [validCode, setvalidCode] = useState(false);
   const [error, setError] = useState('');
@@ -35,46 +35,66 @@ const Home = () => {
     }
   }
 
-  function handleChange(e){
+  function handleChange(e) {
     setID(e.target.value);
-    if(/^[A-Za-z]{4}$/.test(e.target.value)){
+    if (/^[A-Za-z]{4}$/.test(e.target.value)) {
       setvalidCode(true);
-    }else{
+    } else {
       setvalidCode(false);
     }
   }
 
-  function attemptJoin(lobbyCode){
+  function attemptJoin(lobbyCode) {
     lobbyCode ? window.location.assign(`lobby/${lobbyCode}`) : setError("Could not find lobby");
   }
-  function joinLobby(){
-    console.log("running function");
-    socket.emit('joinLobby', auth.getUsername(), ID.toUpperCase(), attemptJoin);
+  function joinLobby(lobbyCode) {
+    socket.emit('joinLobby', auth.getUsername(), lobbyCode, attemptJoin);
   }
 
-  // function attemptJoin(lobbyCode){
-  //   lobbyCode ? window.location.assign(`lobby/${lobbyCode}`) : setError("Could not find lobby");
-  // }
-  // function joinLobby(){
-  //   console.log("running function");
-  //   socket.emit('joinLobby', auth.getUsername(), ID.toUpperCase(), attemptJoin);
-  // }
+  function attemptHost(lobbyCode) {
+    if (lobbyCode) {
+      setGameData({ ...gameData, lobbyCode });
+      localStorage.setItem('lobbycode', lobbyCode);
+      window.location.assign(`lobby/${lobbyCode}`);
+    } else {
+      setError('Already in a lobby!');
+    }
+  }
+  function hostLobby() {
+    socket.emit('newLobby', auth.getUsername(), false, attemptHost);
+  }
 
+  function attemptLeave(status){
+    if(status){
+      localStorage.removeItem('lobbycode');
+      setError('Lobby has be left.');
+      setGameData({gameState: 'Testing',lobbyCode: localStorage.getItem('lobbycode')});
+    }
+  }
+  function leaveGame() {
+    socket.emit('leaveLobby', auth.getUsername(), gameData.lobbyCode, attemptLeave);
+  }
   return (
     <main>
       <div className="container">
         <div className="row">
           <div className="d-grid gap-5 col-12 mx-auto">
             {auth.loggedIn() ? <>
-            <input onChange={handleChange} value={ID}></input>
-            <button className="align-self-end btn btn-danger btn-lg py-5" onClick={joinLobby} disabled={!validCode}><h1>JOIN GAME</h1></button>
-            <button className="align-self-end btn btn-danger btn-lg py-5"><h1>HOST GAME</h1></button>
-            <Link className="align-self-end btn btn-danger btn-lg py-5" to={`/game/${gameData.lobbyCode}`}><h1>TEST GAME</h1></Link>
+              <h3>{error}</h3>
+              {gameData.lobbyCode ? <>
+                <button className="align-self-end btn btn-danger btn-lg py-5" onClick={() => joinLobby(gameData.lobbyCode)}><h1>RE-JOIN GAME</h1></button>
+                <button className="align-self-end btn btn-danger btn-lg py-5" onClick={leaveGame}><h1>LEAVE GAME</h1></button>
+              </> : <>
+              <input onChange={handleChange} value={ID}></input>
+              <button className="align-self-end btn btn-danger btn-lg py-5" onClick={() => joinLobby(ID.toUpperCase())} disabled={!validCode}><h1>JOIN GAME</h1></button>
+              <button className="align-self-end btn btn-danger btn-lg py-5" onClick={hostLobby}><h1>HOST GAME</h1></button>         
+              </>}
+              <Link className="align-self-end btn btn-danger btn-lg py-5" to={`/game/${gameData.lobbyCode}`}><h1>TEST GAME</h1></Link>
             </> : <>
-            <Link className="align-self-end btn btn-danger btn-lg py-5"to="/login"><h1>Login or Signup to play!</h1></Link>
-            
+              <Link className="align-self-end btn btn-danger btn-lg py-5" to="/login"><h1>Login or Signup to play!</h1></Link>
+
             </>}
-          
+
           </div>
         </div>
       </div>
