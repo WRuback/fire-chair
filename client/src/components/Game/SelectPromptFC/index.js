@@ -13,30 +13,29 @@ function SelectPrompt({lobbyId}){
     }, [socket, lobbyId]);
 
     const chosen = [];
-
-    let idx = 0;
-    while (idx < 3){
-        let temp = Math.floor(Math.random() * prompts.length);
-        if (prompts[temp] in chosen){
-            continue;
-        }
-        chosen.push(prompts[temp]);
-        idx++;
+    
+    const choosePrompts = () => {
+        let idx = 0;
+        while (idx < 3){
+            let temp = Math.floor(Math.random() * prompts.length);
+            if (prompts[temp] in chosen){
+                continue;
+            }
+            chosen.push(prompts[temp]);
+            idx++;
+        };
     };
+
+    choosePrompts();
+    console.log(chosen);
 
     return (
         <>
         <h1> You are in the fire Chair!</h1>
         <p> Please select a prompt.</p>
-        {loading ? (
-            <div>Getting Prompts...</div>
-        ) : (
-            <>
-            <button onClick={()=>{TestPrompt(chosen[0])}}>{chosen[0]}</button>
-            <button onClick={()=>{TestPrompt(chosen[1])}}>{chosen[1]}</button>
-            <button onClick={()=>{TestPrompt(chosen[2])}}>{chosen[2]}</button>
-            </>
-        )}
+        <button onClick={()=>{TestPrompt(chosen[0].promptText)}}>{chosen[0].promptText}</button>
+        <button onClick={()=>{TestPrompt(chosen[1].promptText)}}>{chosen[1].promptText}</button>
+        <button onClick={()=>{TestPrompt(chosen[2].promptText)}}>{chosen[2].promptText}</button>
         </>
     );
 };
