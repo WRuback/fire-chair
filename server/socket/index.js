@@ -55,7 +55,14 @@ class Game {
     }
     countScores() {
         for (const selectionCount in this.selections) {
-            this.players.find(item => item.username === selectionCount).currentScore += this.selections[selectionCount].length;
+            if (!(selectionCount === this._firechairName)) {
+                this.players.find(item => item.username === selectionCount).currentScore += this.selections[selectionCount].length;
+            } else {
+                this.fireChair.currentScore += this.selections[selectionCount].length*2;
+                this.selections[selectionCount].forEach(element => {
+                    this.players.find(item => item.username === element).currentScore += 2;
+                });;
+            }
         }
     }
     clientData() {
@@ -149,17 +156,17 @@ function gameSystem(socket, io) {
     socket.on('leaveLobby', async (username, lobbyCode, callBack) => {
         const game = gameStore[lobbyCode];
         if (game) {
-            if(username === game.host.username){
+            if (username === game.host.username) {
                 const players = await io.in(lobbyCode).fetchSockets();
-                io.to(lobbyCode).emit('lobbyUpdate', {gameState: 'Testing',lobbyCode: null});
+                io.to(lobbyCode).emit('lobbyUpdate', { gameState: 'Testing', lobbyCode: null });
                 for (let player of players) {
                     player.leave(lobbyCode);
                 }
                 delete gameStore[lobbyCode];
-            }else{
+            } else {
                 gameStore[lobbyCode].players = game.players.filter(item => item.username !== username);
                 io.to(lobbyCode).emit('lobbyUpdate', gameStore[lobbyCode]);
-                if(gameStore[lobbyCode].players.length === 0){
+                if (gameStore[lobbyCode].players.length === 0) {
                     delete gameStore[lobbyCode];
                 }
             }
@@ -196,16 +203,16 @@ function gameSystem(socket, io) {
         console.log('Working!');
         const game = gameStore[lobbyCode];
         if (game) {
-            if (!game.answers[username]) {
-                game.answers[username] = answer;
-                if (Object.keys(game.answers).length === game.players.length) {
-                    for (const user in game.answers) {
-                        game.selections[user] = [];
+            if (!gameStore[lobbyCode].answers[username]) {
+                gameStore[lobbyCode].answers[username] = answer;
+                console.log(gameStore[lobbyCode]);
+                if (Object.keys(gameStore[lobbyCode].answers).length === game.players.length) {
+                    for (const user in gameStore[lobbyCode].answers) {
+                        gameStore[lobbyCode].selections[user] = [];
                     }
-                    game.gameState = "Select Answer";
-                    console.log(game);
-                    io.to(lobbyCode).except(game.fireChair.socketID).emit('selectAnswers', game.clientData());
-                    io.to(game.fireChair.socketID).emit('selectAnswersFC', game.clientDataFC());
+                    gameStore[lobbyCode].gameState = "Select Answer";
+                    io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswers', gameStore[lobbyCode].clientData());
+                    io.to(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswersFC', gameStore[lobbyCode].clientDataFC());
                 }
             }
             gameStore[lobbyCode] = game;
@@ -216,15 +223,14 @@ function gameSystem(socket, io) {
         console.log(selected);
         const game = gameStore[lobbyCode];
         if (game) {
-            if (game.selections[selected]) {
-                game.selections[selected].push(username);
-                game.totalSelections++;
-                if (game.totalSelections >= game.players.length - 1) {
-                    game.gameState = "Display Score";
-                    game.countScores();
-                    console.log(game);
-                    io.to(lobbyCode).except(game.fireChair.socketID).emit('displaySelectionScore', game.clientData());
-                    io.to(game.fireChair.socketID).emit('displaySelectionScore', game.clientData());
+            if (gameStore[lobbyCode].selections[selected]) {
+                gameStore[lobbyCode].selections[selected].push(username);
+                gameStore[lobbyCode].totalSelections++;
+                if (gameStore[lobbyCode].totalSelections >= game.players.length - 1) {
+                    gameStore[lobbyCode].gameState = "Display Score";
+                    gameStore[lobbyCode].countScores();
+                    io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('displaySelectionScore', gameStore[lobbyCode].clientData());
+                    io.to(gameStore[lobbyCode].fireChair.socketID).emit('displaySelectionScore', gameStore[lobbyCode].clientData());
                 }
             }
             gameStore[lobbyCode] = game;
@@ -234,6 +240,7 @@ function gameSystem(socket, io) {
     socket.on('endGame', async (lobbyCode) => {
         const game = gameStore[lobbyCode];
         if (game && game.host.socketID === socket.id) {
+            game.gameState = 'Game Over';
             io.to(lobbyCode).emit('gameOver', game.clientData());
             const players = await io.in(lobbyCode).fetchSockets();
             for (let player of players) {
