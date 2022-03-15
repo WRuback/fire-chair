@@ -15,6 +15,7 @@ function DisplayScore({ lobbyId }) {
 
     return (
         <>
+            <h4 className='text-light'>Round {gameData.currentRound}</h4>
             <h1 className='text-light'>Results:</h1>
             {Object.keys(gameData.answers).map(item => {
                 if (item !== gameData.fireChair.username) {
