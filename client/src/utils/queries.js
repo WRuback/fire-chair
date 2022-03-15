@@ -27,8 +27,7 @@ export const QUERY_ME = gql`
     me {
       _id
       username
-      deck {
-        _id
+      deck{
         promptText
       }
     }
