@@ -29,8 +29,8 @@ function SelectPrompt({lobbyId}){
     choosePrompts();
     return (
         <>
-        <h1> You are in the fire Chair!</h1>
-        <p> Please select a prompt.</p>
+        <h1 className='text-light'> You are in the fire Chair!</h1>
+        <p className='text-light'> Please select a prompt.</p>
         {loading ? (
             <p>Pulling Prompts...</p>
         ) : (
