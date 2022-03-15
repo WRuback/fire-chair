@@ -18,7 +18,7 @@ const DeckList = ({ deck, isLoggedInUser = false }) => {
     },
   });
 
-  const [removePrompt, { err }] = useMutation(REMOVE_PROMPT, {
+  const [removePrompt] = useMutation(REMOVE_PROMPT, {
     update(cache, {data: {removePrompt}}) {
       try {
         cache.writeQuery({
