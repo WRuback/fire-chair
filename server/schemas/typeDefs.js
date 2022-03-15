@@ -5,6 +5,7 @@ const typeDefs = gql`
     _id: ID
     username: String
     password: String
+    playCount: Int
     deck: [Prompt]
   }
 

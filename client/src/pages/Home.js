@@ -70,16 +70,16 @@ const Home = () => {
     socket.emit('newLobby', auth.getUsername(), false, attemptHost);
   }
 
-  function attemptLeave(status){
-    if(status){
+  function attemptLeave(status) {
+    if (status) {
       localStorage.removeItem('lobbycode');
       setError('Lobby has be left.');
-      setGameData({gameState: 'Testing',lobbyCode: localStorage.getItem('lobbycode')});
+      setGameData({ gameState: 'Testing', lobbyCode: localStorage.getItem('lobbycode') });
     }
   }
   function leaveGame() {
     socket.emit('leaveLobby', auth.getUsername(), gameData.lobbyCode, attemptLeave);
-    if(gameData.host.username === auth.getUsername()){
+    if (gameData.host.username === auth.getUsername()) {
       socket.emit('endGame', gameData.lobbyCode);
     }
   }
@@ -91,14 +91,16 @@ const Home = () => {
             {auth.loggedIn() ? <>
               <h3 className='text-light'>{error}</h3>
               {gameData.lobbyCode ? <>
-                <button className="align-self-end btn btn-danger btn-lg py-5" onClick={() => joinLobby(gameData.lobbyCode)}><h1>RE-JOIN GAME</h1></button>
+                {gameData.gameState === 'lobby' ?
+                  <button className="align-self-end btn btn-danger btn-lg py-5" onClick={() => joinLobby(gameData.lobbyCode)}><h1>RE-JOIN GAME</h1></button>
+                  :
+                  <Link className="align-self-end btn btn-danger btn-lg py-5" to={`game/${gameData.lobbyCode}`}><h1>RE-JOIN GAME</h1></Link>}
                 <button className="align-self-end btn btn-danger btn-lg py-5" onClick={leaveGame}><h1>LEAVE GAME</h1></button>
               </> : <>
-              <input onChange={handleChange} value={ID}></input>
-              <button className="align-self-end btn btn-danger btn-lg py-5" onClick={() => joinLobby(ID.toUpperCase())} disabled={!validCode}><h1>JOIN GAME</h1></button>
-              <button className="align-self-end btn btn-danger btn-lg py-5" onClick={hostLobby}><h1>HOST GAME</h1></button>         
+                <input onChange={handleChange} value={ID}></input>
+                <button className="align-self-end btn btn-danger btn-lg py-5" onClick={() => joinLobby(ID.toUpperCase())} disabled={!validCode}><h1>JOIN GAME</h1></button>
+                <button className="align-self-end btn btn-danger btn-lg py-5" onClick={hostLobby}><h1>HOST GAME</h1></button>
               </>}
-              <Link className="align-self-end btn btn-danger btn-lg py-5" to={`/game/${gameData.lobbyCode}`}><h1>TEST GAME</h1></Link>
             </> : <>
               <Link className="align-self-end btn btn-danger btn-lg py-5" to="/login"><h1>Login or Signup to play!</h1></Link>
 
