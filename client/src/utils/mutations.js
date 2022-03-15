@@ -44,7 +44,6 @@ export const REMOVE_FROM_DECK = gql`
       username
       deck {
         _id
-        promptText
       }
     }
   }

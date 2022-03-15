@@ -8,21 +8,25 @@ import Auth from '../../utils/auth';
 
 const DeckForm = () => {
   const masterDeck = false;
-  const [prompt, setPrompt] = useState('');
+  const [promptText, setPrompt] = useState('');
 
-  const [addToDeck, { error }] = useMutation(ADD_TO_DECK);
-  const [addPrompt] = useMutation(ADD_PROMPT);
+  const [addToDeck] = useMutation(ADD_TO_DECK);
+  const [addPrompt, { error }] = useMutation(ADD_PROMPT);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const { promptData } = await addPrompt({
-        variables: {prompt, masterDeck}
+      console.log('Getting promptdata')
+      const { data } = await addPrompt({
+        variables: {promptText, masterDeck}
       });
 
-      const data = await addToDeck({
-            variables: {promptData},
+      console.log(data);
+      const promptId = data.addPrompt._id;
+
+      await addToDeck({
+            variables: {promptId},
         });
 
         setPrompt('');
@@ -43,7 +47,7 @@ const DeckForm = () => {
           <div className="col-12 col-lg-9">
             <input
               placeholder="Some prompt..."
-              value={prompt}
+              value={promptText}
               className="form-input w-100"
               onChange={(event) => setPrompt(event.target.value)}
             />

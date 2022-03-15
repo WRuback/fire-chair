@@ -4,7 +4,7 @@ import { useMutation } from '@apollo/client';
 import { REMOVE_FROM_DECK, REMOVE_PROMPT } from '../../utils/mutations';
 import { QUERY_ME } from '../../utils/queries';
 
-const DeckList = ({ deck, isLoggedInUser = false }) => {
+const DeckList = ({ deck }) => {
   const [removeFromDeck, { error }] = useMutation(REMOVE_FROM_DECK, {
     update(cache, { data: { removeFromDeck } }) {
       try {
@@ -31,41 +31,35 @@ const DeckList = ({ deck, isLoggedInUser = false }) => {
     },
   });
 
-  const handleRemovePrompt = async (prompt) => {
+  const handleRemovePrompt = async (promptId) => {
     try {
       await removeFromDeck({
-        variables: { prompt },
+        variables: { promptId },
       });
 
-      const { data } = await removePrompt({
-        variables: {prompt},
+      await removePrompt({
+        variables: {promptId},
       });
     } catch (err) {
       console.error(err);
     }
   };
 
-  if (!deck.length) {
-    return <h3>Nothing in Your Deck Yet</h3>;
-  }
-
   return (
     <div>
       <div className="flex-row justify-space-between my-4">
-        {deck &&
-          deck.map((prompt) => (
-            <div key={prompt} className="col-12 col-xl-6">
+        {
+          deck.map((promptData) => (
+            <div key={promptData._id} className="col-12 col-xl-6">
               <div className="card mb-3">
                 <h4 className="card-header bg-dark text-light p-2 m-0 display-flex align-center">
-                  <span>{prompt}</span>
-                  {isLoggedInUser && (
-                    <button
-                      className="btn btn-sm btn-danger ml-auto"
-                      onClick={() => handleRemovePrompt(prompt)}
-                    >
-                      X
-                    </button>
-                  )}
+                  <span>{promptData.promptText}</span>
+                  <button
+                    className="btn btn-sm btn-danger ml-auto"
+                    onClick={() => handleRemovePrompt(promptData._id)}
+                  >
+                    X
+                  </button>
                 </h4>
               </div>
             </div>

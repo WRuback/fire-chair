@@ -47,13 +47,11 @@ const Profile = () => {
     <div>
       <h1>Welcome, {user.username}</h1>
       <h2>Your Custom Prompts</h2>
-
-      {user.deck?.length > 0 && (
+      {user.deck.length > 0 ? (
         <DeckList
           deck={user.deck}
-          isLoggedInUser={!userId && true}
         />
-      )}
+      ) : (<h3>Nothing in Your Deck Yet</h3>)}
 
       <h2>Create a Prompt</h2>
 
