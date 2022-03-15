@@ -11,16 +11,17 @@ const DeckForm = () => {
   const [prompt, setPrompt] = useState('');
 
   const [addToDeck, { error }] = useMutation(ADD_TO_DECK);
-  const [addPrompt, { err }] = useMutation(ADD_PROMPT);
+  const [addPrompt] = useMutation(ADD_PROMPT);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
     try {
-        const { promptData } = await addPrompt({
-            variables: {prompt, masterDeck}
-        });
-        const data = await addToDeck({
+      const { promptData } = await addPrompt({
+        variables: {prompt, masterDeck}
+      });
+
+      const data = await addToDeck({
             variables: {promptData},
         });
 
@@ -32,7 +33,7 @@ const DeckForm = () => {
 
   return (
     <div>
-      <h4>Endorse some more skills below.</h4>
+      <h4>Create your own Prompt</h4>
 
       {Auth.loggedIn() ? (
         <form
@@ -41,7 +42,7 @@ const DeckForm = () => {
         >
           <div className="col-12 col-lg-9">
             <input
-              placeholder="Endorse some skills..."
+              placeholder="Some prompt..."
               value={prompt}
               className="form-input w-100"
               onChange={(event) => setPrompt(event.target.value)}
@@ -50,7 +51,7 @@ const DeckForm = () => {
 
           <div className="col-12 col-lg-3">
             <button className="btn btn-info btn-block py-3" type="submit">
-              Endorse Skill
+              Create Prompt
             </button>
           </div>
           {error && (

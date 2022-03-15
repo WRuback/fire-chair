@@ -30,7 +30,9 @@ export const ADD_TO_DECK = gql`
     addToDeck(promptId: $promptId) {
       _id
       username
-      deck
+      deck {
+        _id
+      }
     }
   }
 `;
@@ -40,7 +42,10 @@ export const REMOVE_FROM_DECK = gql`
     removeFromDeck(promptId: $promptId) {
       _id
       username
-      deck
+      deck {
+        _id
+        promptText
+      }
     }
   }
 `;

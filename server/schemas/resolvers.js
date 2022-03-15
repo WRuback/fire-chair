@@ -60,7 +60,7 @@ const resolvers = {
         return User.findOneAndUpdate(
           { _id: context.user._id},
           {
-            $addToSet: { deck: promptId },
+            $addToSet: { deck: promptId._id },
           },
           {
             new: true,
