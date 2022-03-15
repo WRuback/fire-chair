@@ -8,21 +8,40 @@ const Lobby = () => {
   const { socket, gameData, setGameData } = useContext(socketContext);
 
 
-  
+
   useEffect(() => {
     socket.on('lobbyUpdate', clientData => {
       setGameData(clientData);
-      if(!clientData.lobbyCode){
+      if (!clientData.lobbyCode) {
         window.location.reload();
       }
+    });
+    socket.on('requestPrompt', clientData => {
+      window.location.replace(`/game/${clientData.lobbyCode}`);
+    });
+    socket.on('requestPromptFC', clientData => {
+      window.location.replace(`/game/${clientData.lobbyCode}`);
     });
     return () => {
       socket.off('lobbyUpdate', clientData => {
         setGameData(clientData);
+        if (!clientData.lobbyCode) {
+          window.location.reload();
+        }
+      });
+      socket.off('requestPrompt', clientData => {
+        window.location.replace(`/game/${clientData.lobbyCode}`);
+      });
+      socket.off('requestPromptFC', clientData => {
+        window.location.replace(`/game/${clientData.lobbyCode}`);
       });
     }
   }, [socket, setGameData]);
-  
+
+  function StartGame(){
+    socket.emit('startRound', gameData.lobbyCode);
+  }
+
   if (!gameData.lobbyCode) {
     return <h1>This lobby no longer exists... sorry!</h1>;
   }
@@ -48,10 +67,10 @@ const Lobby = () => {
             </div>
           </div>
           {/* Plug in socket to dynamically add user when lobby is joined */}
-
-          <button className="btn-danger btn-lg py-5 align-item-center justify-content-center">
-            <h1>START</h1>
-          </button>
+          {gameData.host.username === auth.getUsername() ?
+            <button onClick={StartGame} className="btn-danger btn-lg py-5 align-item-center justify-content-center">
+              <h1>START</h1>
+            </button> : <></>}
 
         </>
       ) : (

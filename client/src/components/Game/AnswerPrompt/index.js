@@ -1,5 +1,6 @@
 import React, { useContext, useCallback, useState } from 'react';
 import { socketContext } from '../../../utils/socketContext';
+import auth from '../../../utils/auth';
 
 function AnswerPrompt({ lobbyId }) {
     const { socket, gameData } = useContext(socketContext);
@@ -7,7 +8,7 @@ function AnswerPrompt({ lobbyId }) {
     let [answerEntered, setAnswerEntered] = useState(false);
     
     const TestAnswer = useCallback(() => {
-        socket.emit('answerReceived', lobbyId, answer,'Testman');
+        socket.emit('answerReceived', lobbyId, answer,auth.getUsername());
         setAnswerEntered(true);
     }, [socket, lobbyId, answer]);
 

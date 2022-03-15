@@ -79,6 +79,9 @@ const Home = () => {
   }
   function leaveGame() {
     socket.emit('leaveLobby', auth.getUsername(), gameData.lobbyCode, attemptLeave);
+    if(gameData.host.username === auth.getUsername()){
+      socket.emit('endGame', gameData.lobbyCode);
+    }
   }
   return (
     <main>
@@ -86,7 +89,7 @@ const Home = () => {
         <div className="row">
           <div className="d-grid gap-5 col-12 mx-auto">
             {auth.loggedIn() ? <>
-              <h3>{error}</h3>
+              <h3 className='text-light'>{error}</h3>
               {gameData.lobbyCode ? <>
                 <button className="align-self-end btn btn-danger btn-lg py-5" onClick={() => joinLobby(gameData.lobbyCode)}><h1>RE-JOIN GAME</h1></button>
                 <button className="align-self-end btn btn-danger btn-lg py-5" onClick={leaveGame}><h1>LEAVE GAME</h1></button>

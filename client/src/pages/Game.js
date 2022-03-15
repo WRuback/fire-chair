@@ -7,6 +7,7 @@ import SelectAnswer from '../components/Game/SelectAnswer';
 import SelectAnswerFC from '../components/Game/SelectAnswerFC';
 import SelectPrompt from '../components/Game/SelectPrompt';
 import SelectPromptFC from '../components/Game/SelectPromptFC';
+import GameOver from '../components/Game/GameOver';
 // import Input from '../components/Game/Input/Input';
 // import MessageBoard from '../components/Game/MessageBoard/MessageBoard';
 import { socketContext } from '../utils/socketContext';
@@ -38,6 +39,9 @@ const Game = () => {
         socket.on('displaySelectionScore', clientData => {
             setGameData(clientData);
         });
+        socket.on('gameOver', clientData => {
+            setGameData(clientData);
+        });
         return () => {
             socket.off('requestPrompt', clientData => {
                 setGameData(clientData);
@@ -57,6 +61,9 @@ const Game = () => {
             socket.off('displaySelectionScore', clientData => {
                 setGameData(clientData);
             });
+            socket.off('gameOver', clientData => {
+                setGameData(clientData);
+            });
         }
     }, [socket, setGameData]);
 
@@ -69,6 +76,7 @@ const Game = () => {
         console.log(gameData.gameState);
         switch (gameData.gameState) {
             case 'lobby':
+                window.location.replace('/lobby/' + gameData.lobbyCode);
                 return <button onClick={testStart}>StartGame</button>;
             case 'Select Prompt':
                 return <SelectPrompt lobbyId={lobbyId}></SelectPrompt>;
@@ -82,8 +90,10 @@ const Game = () => {
                 return <SelectAnswerFC lobbyId={lobbyId}></SelectAnswerFC>;
             case 'Display Score':
                 return <DisplayScore lobbyId={lobbyId}></DisplayScore>;
+            case 'Game Over':
+                return <GameOver lobbyId={lobbyId}></GameOver>;
             default:
-                return <p>Something has gone wrong</p>;
+                return <p className='text-light'>This game no longer exists, sorry!</p>;
         }
     }
     return (
