@@ -25,7 +25,7 @@ function DisplayScore({ lobbyId }) {
             })}
             <p className='text-light'>{gameData.fireChair.username}'s Answer was: {gameData.answers[gameData.fireChair.username]}</p>
             <p className='text-light'> This was picked by {gameData.selections[gameData.fireChair.username].length ? gameData.selections[gameData.fireChair.username].join(", ") : 'no one'}!</p>
-            <p className='text-light'> the gained 2 points each, while {gameData.fireChair.username} got {gameData.selections[gameData.fireChair.username].length * 2} points.</p>
+            <p className='text-light'> Gained 2 points each, while {gameData.fireChair.username} got {gameData.selections[gameData.fireChair.username].length * 2} points.</p>
 
             <p className='text-light'>Current Scores</p>
             <ul>
@@ -35,8 +35,8 @@ function DisplayScore({ lobbyId }) {
             </ul>
 
             {gameData.host.username === auth.getUsername() ? <>
-                <button className="align-self-end btn btn-danger btn-lg py-5" onClick={testStart}>Start New Round</button>
-                <button className="align-self-end btn btn-danger btn-lg py-5" onClick={testEnd}>End Game</button>
+                <button className="align-self-end btn btn-danger btn-lg py-5 m-1" onClick={testStart}>Start New Round</button>
+                <button className="align-self-end btn btn-danger btn-lg py-5 m-1" onClick={testEnd}>End Game</button>
             </> : <>
                 <p className='text-light'>Host is selecting next step.</p>
             </>}

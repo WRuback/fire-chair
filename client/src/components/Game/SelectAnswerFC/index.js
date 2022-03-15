@@ -12,7 +12,7 @@ function SelectAnswerFC({lobbyId}){
 
     return (
         <>
-        <p>Await for player selections.</p>
+        <p className='text-light'>Await for player selections.</p>
         {Object.values(gameData.answers).map(item => <p>{item}</p>)}
         <button onClick={testSelect}>SelectAnswer</button>
         </>
