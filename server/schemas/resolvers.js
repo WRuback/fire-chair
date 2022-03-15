@@ -13,6 +13,7 @@ const resolvers = {
     },
 
     me: async (parent, args, context) => {
+      console.log(context);
       if (context.user) {
         console.log(await User.findOne({ _id: context.user._id }));
         return User.findOne({ _id: context.user._id });
