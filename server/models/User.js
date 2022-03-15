@@ -18,7 +18,10 @@ const userSchema = new Schema({
         type: Number,
         default: 0
     },
-    deck: [Prompt.schema]
+    deck: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Prompt'
+    }]
 });
 
 userSchema.pre('save', async function(next) {

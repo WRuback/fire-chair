@@ -16,7 +16,7 @@ const resolvers = {
       console.log(context);
       if (context.user) {
         console.log(await User.findOne({ _id: context.user._id }));
-        return User.findOne({ _id: context.user._id });
+        return User.findOne({ _id: context.user._id }).populate('deck');
       }
       throw new AuthenticationError('You need to be logged in!');
     },
@@ -60,7 +60,7 @@ const resolvers = {
         return User.findOneAndUpdate(
           { _id: context.user._id},
           {
-            $addToSet: { deck: promptId._id },
+            $addToSet: { deck: promptId },
           },
           {
             new: true,
