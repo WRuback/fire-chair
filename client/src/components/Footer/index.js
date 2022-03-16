@@ -16,6 +16,7 @@ const Footer = () => {
           </button>
         )}
         <h4>&copy; {new Date().getFullYear()} - A Pack of Lone Wolves</h4>
+        <h5>Inspired by Hot Seat - support the offical game here : <a style={{color: 'yellow'}} href='https://playerten.com/products/hot-seat'>playerten.com/products/hot-seat</a></h5>
       </div>
     </footer>
   );

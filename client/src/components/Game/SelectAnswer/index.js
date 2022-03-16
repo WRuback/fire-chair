@@ -19,11 +19,17 @@ function SelectAnswer({ lobbyId }) {
             {answerEntered ? <>
                 <p>Awaiting other answers.</p>
             </> : <>
-                {Object.keys(gameData.answers).map(item => (
-                    <>
-                        <button className="align-self-end btn btn-danger btn-lg py-5 m-1" onClick={() => { testSelect(item) }}>{gameData.answers[item]}</button>
-                    </>
-                ))}
+                {Object.keys(gameData.answers).map(item => {
+                    if (item !== auth.getUsername()) {
+                        return (
+                            <>
+                                <button className="align-self-end btn btn-danger btn-lg py-5 m-1" onClick={() => { testSelect(item) }}>{gameData.answers[item]}</button>
+                            </>
+                        )
+                    }else{
+                        return <></>;
+                    }
+                })}
             </>}
         </div>
     );
