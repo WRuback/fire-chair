@@ -97,13 +97,12 @@ const Home = () => {
                   <Link className="align-self-end btn btn-danger btn-lg py-5" to={`game/${gameData.lobbyCode}`}><h1>RE-JOIN GAME</h1></Link>}
                 <button className="align-self-end btn btn-danger btn-lg py-5" onClick={leaveGame}><h1>LEAVE GAME</h1></button>
               </> : <>
-                <input onChange={handleChange} value={ID}></input>
+                <input class="form-control form-control-lg" type="text" placeholder="Have A Lobby Code?" onChange={handleChange} value={ID}></input>
                 <button className="align-self-end btn btn-danger btn-lg py-5" onClick={() => joinLobby(ID.toUpperCase())} disabled={!validCode}><h1>JOIN GAME</h1></button>
                 <button className="align-self-end btn btn-danger btn-lg py-5" onClick={hostLobby}><h1>HOST GAME</h1></button>
               </>}
             </> : <>
               <Link className="align-self-end btn btn-danger btn-lg py-5" to="/login"><h1>Login or Signup to play!</h1></Link>
-
             </>}
 
           </div>

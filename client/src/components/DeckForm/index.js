@@ -37,7 +37,7 @@ const DeckForm = () => {
 
   return (
     <div>
-      <h4>Create your own Prompt</h4>
+      <h4 className='text-light'>Create your own Prompt</h4>
 
       {Auth.loggedIn() ? (
         <form
@@ -54,7 +54,7 @@ const DeckForm = () => {
           </div>
 
           <div className="col-12 col-lg-3">
-            <button className="btn btn-info btn-block py-3" type="submit">
+            <button className="btn btn-block py-3 btn-danger" type="submit">
               Create Prompt
             </button>
           </div>
