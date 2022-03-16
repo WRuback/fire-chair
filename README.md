@@ -12,7 +12,7 @@ The following items were used in making our full stack application:
 
 * React
 
-* Socket.IO 
+* Socket.IO
 
 * JavaScript
 
@@ -22,7 +22,9 @@ The following items were used in making our full stack application:
 
 * GraphQL
 
-* NodeJS
+* Node.JS
+
+* Mongoose
 
 ## Screenshots
 ![Landing Page](./images/FC-LandingPage.jpg)
@@ -35,6 +37,8 @@ The following items were used in making our full stack application:
 
 ![Game Page](./images/FC-GamePage.jpg)
 
+![Profile Page with custom prompt](./images/FC-Profile.jpg)
+
 ## Contributions
 
 Billy: Created the socket.io link between client and server and setup the logic of the game.
@@ -45,7 +49,7 @@ Dre: Styling, homepage design and live animations.
 
 Cole: Sketched layout of the app, designed game lobby and navbar and ReadMe
 
-Thiago: Profile styling, Game pages and their style.
+Thiago: Profile and Game style, Project manager with good times and moral support.
 
 ## License
 
