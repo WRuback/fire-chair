@@ -73,7 +73,7 @@ const Home = () => {
   function attemptLeave(status) {
     if (status) {
       localStorage.removeItem('lobbycode');
-      setError('Lobby has be left.');
+      setError('Lobby has been left.');
       setGameData({ gameState: 'Testing', lobbyCode: localStorage.getItem('lobbycode') });
     }
   }
