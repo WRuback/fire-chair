@@ -36,7 +36,7 @@ const Profile = () => {
 
   if (!user?.username) {
     return (
-      <h4>
+      <h4 className='text-light'>
         You need to be logged in to see your profile page. Use the navigation
         links above to sign up or log in!
       </h4>
@@ -45,15 +45,15 @@ const Profile = () => {
 
   return (
     <div>
-      <h1>Welcome, {user.username}</h1>
-      <h2>Your Custom Prompts</h2>
+      <h1 className='text-light'>Welcome, {user.username}</h1>
+      <h2 className='text-light' >Your Custom Prompts</h2>
       {user.deck.length > 0 ? (
         <DeckList
           deck={user.deck}
         />
-      ) : (<h3>Nothing in Your Deck Yet</h3>)}
+      ) : (<h3 className='text-light'>Nothing in Your Deck Yet</h3>)}
 
-      <h2>Create a Prompt</h2>
+      <h2 className='text-light'>Create a Prompt</h2>
 
       <div className="my-4 p-4" style={{ border: '1px dotted #1a1a1a' }}>
         <DeckForm profileId={user._id} />
