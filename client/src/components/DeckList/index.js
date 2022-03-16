@@ -2,34 +2,10 @@ import React from 'react';
 import { useMutation } from '@apollo/client';
 
 import { REMOVE_FROM_DECK, REMOVE_PROMPT } from '../../utils/mutations';
-import { QUERY_ME } from '../../utils/queries';
 
 const DeckList = ({ deck }) => {
-  const [removeFromDeck, { error }] = useMutation(REMOVE_FROM_DECK, {
-    update(cache, { data: { removeFromDeck } }) {
-      try {
-        cache.writeQuery({
-          query: QUERY_ME,
-          data: { me: removeFromDeck },
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    },
-  });
-
-  const [removePrompt] = useMutation(REMOVE_PROMPT, {
-    update(cache, {data: {removePrompt}}) {
-      try {
-        cache.writeQuery({
-          query: QUERY_ME,
-          data: { me: removePrompt},
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    },
-  });
+  const [removeFromDeck, { error }] = useMutation(REMOVE_FROM_DECK);
+  const [removePrompt] = useMutation(REMOVE_PROMPT);
 
   const handleRemovePrompt = async (promptId) => {
     try {
@@ -51,6 +27,7 @@ const DeckList = ({ deck }) => {
         {
           deck.map((promptData) => (
             <div key={promptData._id} className="col-12 col-xl-6">
+              {console.log(promptData)}
               <div className="card mb-3">
                 <h4 className="card-header bg-dark text-light p-2 m-0 display-flex align-center">
                   <span>{promptData.promptText}</span>
