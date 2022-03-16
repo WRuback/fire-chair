@@ -1,9 +1,10 @@
 # Fire Chair
-[Link to Project Page](https://github.com/WRuback/fire-chair/projects/1)
 
 ## Overview
 
 We created Fire Chair as a way to play a favorite table top game "Hot Seat". This  is a multiplayer game where users can guess which answer was provided by the user in the Fire Chair.
+
+[Try the game here!](https://polw-fire-chair.herokuapp.com/)
 
 ## Key Technology Used
 
@@ -30,18 +31,21 @@ The following items were used in making our full stack application:
 
 ![Rules Modal](./images/FC-Modal.jpg)
 
+![Lobby](./images/FC-Lobby.jpg)
+
+![Game Page](./images/FC-GamePage.jpg)
 
 ## Contributions
 
-Billy:
+Billy: Created the socket.io link between client and server and setup the logic of the game.
 
-Ezequiel:
+Ezequiel: GraphQL, Profile page and Mongoose.
 
-Dre:
+Dre: Styling, homepage design and live animations.
 
-Cole:
+Cole: Sketched layout of the app, designed game lobby and navbar and ReadMe
 
-Thiago: 
+Thiago: Profile styling, Game pages and their style.
 
 ## License
 
