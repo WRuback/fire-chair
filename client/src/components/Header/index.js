@@ -67,15 +67,15 @@ const Header = () => {
                 <h3><strong>Game Play</strong></h3>
                 <div className='text-start'>
                 <h5 className='d-inline'><strong>Hot Seat Assignment & Card Assignment </strong></h5>
-                <p className='d-inline'>The game will randomly select a player to be the player in the Hot Seat.</p>
+                <p className='d-inline'>The game will randomly select a player to be the player in the Hot Seat. The player in the Hot Seat will be given 3 prompts to select from.</p>
                 </div>
                 <div className='text-start'>
                 <h5 className='d-inline '><strong>Answer Prompt </strong></h5>
-                <p className='d-inline'>Everyone including the player in the Fire Chair is given 60 seconds to write and answer to the prompt selected. Remember to write your answer from the perspective of the person in the Fire Chair.</p>
+                <p className='d-inline'>Everyone including the player in the Fire Chair will write and answer the prompt selected. Remember to write your answer from the perspective of the person in the Fire Chair.</p>
                 </div>
                 <div className='text-start'>
                 <h5 className='d-inline '><strong>Guess </strong></h5>
-                <p className='d-inline'>After everyone has answered the prompt, players will be shown all the answers written by everyone and given 60 second to guess which answer they believe the person in the fire chair wrote. </p>
+                <p className='d-inline'>After everyone has answered the prompt, players will be shown all the answers written by everyone to guess which answer they believe the person in the fire chair wrote. </p>
                 </div>
                 <div className='text-start'>
                 <h5 className='d-inline '><strong>Reveal and Scoring </strong></h5>
@@ -88,10 +88,7 @@ const Header = () => {
                 <ul>
                   <li>1 point for each player that guesses your answer instead of the Fire Chairs</li>
                   <li>2 points for guessing the player in the Fire Chairs answer correctly</li>
-                  <li>4 points for responding with the same answer as the player in the Fire Chair</li>
                 </ul>
-                <h3>Winning</h3>
-                <p>First player to get to 25 points wins.</p>
               </div>
               <div className="modal-footer">
               <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
