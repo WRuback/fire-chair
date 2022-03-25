@@ -10,7 +10,7 @@ function GameOver({lobbyId}){
         <h1 className='text-light'> The host had ended the game!</h1>
         <p className='text-light'> Thank you for playing! Final Score:</p>
         <ul>
-        {gameData.players.map(item => {
+        {gameData.players.sort((a,b) => b.currentScore - a.currentScore).map(item => {
             return <li className='text-light'>{item.username}: {item.currentScore}</li>
         })}
         </ul>

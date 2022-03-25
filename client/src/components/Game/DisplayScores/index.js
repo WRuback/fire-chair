@@ -30,7 +30,7 @@ function DisplayScore({ lobbyId }) {
 
             <p className='text-light'>Current Scores</p>
             <ul>
-                {gameData.players.map(item => {
+                {gameData.players.sort((a,b) => b.currentScore - a.currentScore).map(item => {
                     return <li className='text-light'>{item.username}: {item.currentScore}</li>
                 })}
             </ul>
