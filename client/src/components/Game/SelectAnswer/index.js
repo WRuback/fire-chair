@@ -11,6 +11,13 @@ function SelectAnswer({ lobbyId }) {
         setAnswerEntered(true);
     }, [socket, lobbyId]);
 
+    function shuffle(array){
+        for(let i = array.length-1; i>0; i--){
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
 
     return (
         <div>
@@ -19,7 +26,7 @@ function SelectAnswer({ lobbyId }) {
             {answerEntered ? <>
                 <p>Awaiting other answers.</p>
             </> : <>
-                {Object.keys(gameData.answers).map(item => {
+                {shuffle(Object.keys(gameData.answers)).map(item => {
                     if (item !== auth.getUsername()) {
                         return (
                             <>
