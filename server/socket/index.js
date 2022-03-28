@@ -13,6 +13,8 @@ class Game {
         this.answers = {};
         this.selections = {};
         this.totalSelections = 0;
+        this.currentTime = 0;
+        this.currentTimer = '';
     }
     get host() {
         return this.players.find(item => item.username === this._hostName);
@@ -58,7 +60,7 @@ class Game {
             if (!(selectionCount === this._firechairName)) {
                 this.players.find(item => item.username === selectionCount).currentScore += this.selections[selectionCount].length;
             } else {
-                this.fireChair.currentScore += this.selections[selectionCount].length*2;
+                this.fireChair.currentScore += this.selections[selectionCount].length * 2;
                 this.selections[selectionCount].forEach(element => {
                     this.players.find(item => item.username === element).currentScore += 2;
                 });;
@@ -162,11 +164,15 @@ function gameSystem(socket, io) {
                 for (let player of players) {
                     player.leave(lobbyCode);
                 }
+                clearInterval(gameStore[lobbyCode].currentTimer);
+                console.log('Removed due to game deletion');
                 delete gameStore[lobbyCode];
             } else {
                 gameStore[lobbyCode].players = game.players.filter(item => item.username !== username);
-                io.to(lobbyCode).emit('lobbyUpdate', gameStore[lobbyCode]);
+                io.to(lobbyCode).emit('lobbyUpdate', gameStore[lobbyCode].clientData());
                 if (gameStore[lobbyCode].players.length === 0) {
+                    clearInterval(gameStore[lobbyCode].currentTimer);
+                    console.log('Removed due to game deletion');
                     delete gameStore[lobbyCode];
                 }
             }
@@ -176,27 +182,11 @@ function gameSystem(socket, io) {
     });
 
     socket.on('startRound', (lobbyCode) => {
-        console.log('Working!');
-        const game = gameStore[lobbyCode];
-        if (game) {
-            game.newRound();
-            console.log(game.clientDataFC());
-            io.to(lobbyCode).except(game.fireChair.socketID).emit('requestPrompt', game.clientData());
-            io.to(game.fireChair.socketID).emit('requestPromptFC', game.clientDataFC());
-            gameStore[lobbyCode] = game;
-        }
+        startRound(lobbyCode, io);
     });
 
     socket.on('promptSelected', (lobbyCode, prompt) => {
-        console.log('Working!');
-        const game = gameStore[lobbyCode];
-        if (game) {
-            game.gameState = "Answer Prompt";
-            game.currentPrompt = prompt;
-            console.log(game.clientData());
-            io.to(lobbyCode).emit('answerPrompt', game.clientData());
-            gameStore[lobbyCode] = game;
-        }
+        promptSelected(lobbyCode, prompt, io);
     });
 
     socket.on('answerReceived', (lobbyCode, answer, username) => {
@@ -246,6 +236,8 @@ function gameSystem(socket, io) {
             for (let player of players) {
                 player.leave(lobbyCode);
             }
+            clearInterval(gameStore[lobbyCode].currentTimer);
+            console.log('Removed due to game deletion');
             delete gameStore[lobbyCode];
         }
     });
@@ -262,6 +254,8 @@ function gameSystem(socket, io) {
                         console.log(room);
                         const connectedPlayers = await io.in(room).fetchSockets();
                         if (connectedPlayers.length <= 0) {
+                            clearInterval(gameStore[room].currentTimer);
+                            console.log('Removed due to game deletion');
                             delete gameStore[room];
                             console.log(room + " deleted.");
                         }
@@ -273,3 +267,69 @@ function gameSystem(socket, io) {
 };
 
 module.exports = gameSystem;
+
+function promptSelected(lobbyCode, prompt, io) {
+    console.log('Working!');
+    const game = gameStore[lobbyCode];
+    if (game) {
+        game.gameState = "Answer Prompt";
+        game.currentPrompt = prompt;
+        console.log(game.clientData());
+        io.to(lobbyCode).emit('answerPrompt', game.clientData());
+
+        clearInterval(gameStore[lobbyCode].currentTimer);
+        game.currentTime = 10;
+        gameStore[lobbyCode] = game;
+        gameStore[lobbyCode].currentTimer = setInterval(() => {
+            if (gameStore[lobbyCode]) {
+                gameStore[lobbyCode].currentTime--;
+                console.log(gameStore[lobbyCode].currentTime);
+                if (gameStore[lobbyCode].currentTime === 0) {
+                    clearInterval(gameStore[lobbyCode].currentTimer);
+                    console.log("Interval Cleared, advancing game state.");
+                    if (gameStore[lobbyCode].answers[gameStore[lobbyCode]._hostName]) {
+                        for (const user in gameStore[lobbyCode].answers) {
+                            gameStore[lobbyCode].selections[user] = [];
+                        }
+                        gameStore[lobbyCode].gameState = "Select Answer";
+                        io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswers', gameStore[lobbyCode].clientData());
+                        io.to(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswersFC', gameStore[lobbyCode].clientDataFC());
+                    } else {
+                        startRound(lobbyCode, io);
+                    }
+                }
+            } else {
+                clearInterval(gameStore[lobbyCode].currentTimer);
+                console.log('Removed due to game deletion');
+            }
+        }, 1000);
+    }
+}
+
+function startRound(lobbyCode, io) {
+    console.log('Working!');
+    const game = gameStore[lobbyCode];
+    if (game) {
+        game.newRound();
+        console.log(game.clientDataFC());
+        io.to(lobbyCode).except(game.fireChair.socketID).emit('requestPrompt', game.clientData());
+        io.to(game.fireChair.socketID).emit('requestPromptFC', game.clientDataFC());
+        clearInterval(gameStore[lobbyCode].currentTimer);
+        game.currentTime = 10;
+        gameStore[lobbyCode] = game;
+        gameStore[lobbyCode].currentTimer = setInterval(() => {
+            if (gameStore[lobbyCode]) {
+                gameStore[lobbyCode].currentTime--;
+                console.log(gameStore[lobbyCode].currentTime);
+                if (gameStore[lobbyCode].currentTime === 0) {
+                    clearInterval(gameStore[lobbyCode].currentTimer);
+                    console.log("Interval Cleared, starting new round.");
+                    startRound(lobbyCode, io);
+                }
+            } else {
+                clearInterval(gameStore[lobbyCode].currentTimer);
+                console.log('Removed due to game deletion');
+            }
+        }, 1000);
+    }
+}
