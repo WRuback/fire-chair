@@ -1,7 +1,7 @@
 import socketIO from 'socket.io-client';
 import React from 'react';
 
-export const socket = socketIO.connect('http://localhost:3001');
+export const socket = socketIO.connect('');
 export const socketContext = React.createContext();
 // useEffect(()=>{
 //     const socket = io('http://localhost:3001');

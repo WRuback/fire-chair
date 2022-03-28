@@ -203,9 +203,36 @@ function gameSystem(socket, io) {
                     gameStore[lobbyCode].gameState = "Select Answer";
                     io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswers', gameStore[lobbyCode].clientData());
                     io.to(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswersFC', gameStore[lobbyCode].clientDataFC());
+
+                    clearInterval(gameStore[lobbyCode].currentTimer);
+                    gameStore[lobbyCode].currentTime = 10;
+                    gameStore[lobbyCode] = game;
+                    gameStore[lobbyCode].currentTimer = setInterval(() => {
+                        if (gameStore[lobbyCode]) {
+                            gameStore[lobbyCode].currentTime--;
+                            console.log(gameStore[lobbyCode].currentTime);
+                            if (gameStore[lobbyCode].currentTime === 0) {
+                                clearInterval(gameStore[lobbyCode].currentTimer);
+                                console.log("Interval Cleared, advancing game state.");
+                                if (gameStore[lobbyCode].totalSelections >= 1) {
+                                    gameStore[lobbyCode].gameState = "Display Score";
+                                    gameStore[lobbyCode].countScores();
+                                    io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('displaySelectionScore', gameStore[lobbyCode].clientData());
+                                    io.to(gameStore[lobbyCode].fireChair.socketID).emit('displaySelectionScore', gameStore[lobbyCode].clientData());
+                                } else {
+                                    startRound(lobbyCode, io);
+                                }
+                            }
+                        } else {
+                            clearInterval(gameStore[lobbyCode].currentTimer);
+                            console.log('Removed due to game deletion');
+                        }
+                    }, 1000);
                 }
             }
             gameStore[lobbyCode] = game;
+
+
         }
     });
 
