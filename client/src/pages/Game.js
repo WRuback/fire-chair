@@ -8,6 +8,7 @@ import SelectAnswerFC from '../components/Game/SelectAnswerFC';
 import SelectPrompt from '../components/Game/SelectPrompt';
 import SelectPromptFC from '../components/Game/SelectPromptFC';
 import GameOver from '../components/Game/GameOver';
+import Timer from '../components/Game/Timer';
 // import Input from '../components/Game/Input/Input';
 // import MessageBoard from '../components/Game/MessageBoard/MessageBoard';
 import { socketContext } from '../utils/socketContext';
@@ -73,14 +74,19 @@ const Game = () => {
         switch (gameData.gameState) {
             case 'Select Prompt':
                 return <SelectPrompt lobbyId={lobbyId}></SelectPrompt>;
+
             case 'Select PromptFC':
                 return <SelectPromptFC lobbyId={lobbyId}></SelectPromptFC>;
+
             case 'Answer Prompt':
                 return <AnswerPrompt lobbyId={lobbyId}></AnswerPrompt>;
+
             case 'Select Answer':
                 return <SelectAnswer lobbyId={lobbyId}></SelectAnswer>;
+
             case 'Select AnswerFC':
                 return <SelectAnswerFC lobbyId={lobbyId}></SelectAnswerFC>;
+ 
             case 'Display Score':
                 return <DisplayScore lobbyId={lobbyId}></DisplayScore>;
             case 'Game Over':
