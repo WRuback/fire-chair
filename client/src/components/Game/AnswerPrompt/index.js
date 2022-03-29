@@ -1,12 +1,13 @@
 import React, { useContext, useCallback, useState } from 'react';
 import { socketContext } from '../../../utils/socketContext';
 import auth from '../../../utils/auth';
+import Timer from '../Timer';
 
 function AnswerPrompt({ lobbyId }) {
     const { socket, gameData } = useContext(socketContext);
     let [answer, setAnswer] = useState('');
     let [answerEntered, setAnswerEntered] = useState(false);
-    
+
     const TestAnswer = useCallback(() => {
         socket.emit('answerReceived', lobbyId, answer,auth.getUsername());
         setAnswerEntered(true);
@@ -20,6 +21,7 @@ function AnswerPrompt({ lobbyId }) {
         <>
             <h4 className='text-light'>Round {gameData.currentRound}</h4>
             <h4 className='text-light'>{gameData.fireChair.username} has selected the prompt below! Please answer as if you were {gameData.fireChair.username}.</h4>
+            <Timer lobbyId={lobbyId}></Timer>
             <h1 className='text-light'>{gameData.currentPrompt}</h1>
             {!answerEntered ? (
                 <>

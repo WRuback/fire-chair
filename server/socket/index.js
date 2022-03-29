@@ -15,6 +15,7 @@ class Game {
         this.totalSelections = 0;
         this.currentTime = 0;
         this.currentTimer = '';
+        this.error = '';
     }
     get host() {
         return this.players.find(item => item.username === this._hostName);
@@ -43,7 +44,7 @@ class Game {
         this.players.push(player);
         return true;
     }
-    newRound() {
+    newRound(holdRound) {
         this.currentPrompt = '';
         this.answers = {};
         this.selections = {};
@@ -53,7 +54,9 @@ class Game {
         const newFireChair = this.players[Math.floor(Math.random() * this.players.length)];
         console.log(newFireChair);
         this.fireChair = newFireChair;
-        this.currentRound = this.currentRound + 1;
+        if (true) {
+            this.currentRound = this.currentRound + 1;
+        }
     }
     countScores() {
         for (const selectionCount in this.selections) {
@@ -79,7 +82,9 @@ class Game {
             fireChair: this.fireChair,
             answers: this.answers,
             selections: this.selections,
-            totalSelections: this.totalSelections
+            totalSelections: this.totalSelections,
+            currentTime: this.currentTime,
+            error: this.error,
         }
     }
     clientDataFC() {
@@ -201,12 +206,11 @@ function gameSystem(socket, io) {
                         gameStore[lobbyCode].selections[user] = [];
                     }
                     gameStore[lobbyCode].gameState = "Select Answer";
+                    gameStore[lobbyCode].currentTime = 45;
                     io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswers', gameStore[lobbyCode].clientData());
                     io.to(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswersFC', gameStore[lobbyCode].clientDataFC());
 
                     clearInterval(gameStore[lobbyCode].currentTimer);
-                    gameStore[lobbyCode].currentTime = 10;
-                    gameStore[lobbyCode] = game;
                     gameStore[lobbyCode].currentTimer = setInterval(() => {
                         if (gameStore[lobbyCode]) {
                             gameStore[lobbyCode].currentTime--;
@@ -220,7 +224,7 @@ function gameSystem(socket, io) {
                                     io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('displaySelectionScore', gameStore[lobbyCode].clientData());
                                     io.to(gameStore[lobbyCode].fireChair.socketID).emit('displaySelectionScore', gameStore[lobbyCode].clientData());
                                 } else {
-                                    startRound(lobbyCode, io);
+                                    startRound(lobbyCode, io, 'No one made a selection, so the round was restarted.');
                                 }
                             }
                         } else {
@@ -302,10 +306,10 @@ function promptSelected(lobbyCode, prompt, io) {
         game.gameState = "Answer Prompt";
         game.currentPrompt = prompt;
         console.log(game.clientData());
+        game.currentTime = 60;
         io.to(lobbyCode).emit('answerPrompt', game.clientData());
 
         clearInterval(gameStore[lobbyCode].currentTimer);
-        game.currentTime = 10;
         gameStore[lobbyCode] = game;
         gameStore[lobbyCode].currentTimer = setInterval(() => {
             if (gameStore[lobbyCode]) {
@@ -314,15 +318,16 @@ function promptSelected(lobbyCode, prompt, io) {
                 if (gameStore[lobbyCode].currentTime === 0) {
                     clearInterval(gameStore[lobbyCode].currentTimer);
                     console.log("Interval Cleared, advancing game state.");
-                    if (gameStore[lobbyCode].answers[gameStore[lobbyCode]._hostName]) {
+                    if (gameStore[lobbyCode].answers[gameStore[lobbyCode]._firechairName]) {
                         for (const user in gameStore[lobbyCode].answers) {
                             gameStore[lobbyCode].selections[user] = [];
                         }
                         gameStore[lobbyCode].gameState = "Select Answer";
+                        gameStore[lobbyCode].currentTime = 45;
                         io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswers', gameStore[lobbyCode].clientData());
                         io.to(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswersFC', gameStore[lobbyCode].clientDataFC());
                     } else {
-                        startRound(lobbyCode, io);
+                        startRound(lobbyCode, io, 'Firechair did not answer the prompt, so a new user was selected.');
                     }
                 }
             } else {
@@ -333,16 +338,20 @@ function promptSelected(lobbyCode, prompt, io) {
     }
 }
 
-function startRound(lobbyCode, io) {
+function startRound(lobbyCode, io, errorMessage) {
     console.log('Working!');
     const game = gameStore[lobbyCode];
     if (game) {
-        game.newRound();
+        game.newRound(errorMessage);
         console.log(game.clientDataFC());
+        if (errorMessage) {
+            game.error = errorMessage;
+        }
+        game.currentTime = 30;
         io.to(lobbyCode).except(game.fireChair.socketID).emit('requestPrompt', game.clientData());
         io.to(game.fireChair.socketID).emit('requestPromptFC', game.clientDataFC());
         clearInterval(gameStore[lobbyCode].currentTimer);
-        game.currentTime = 10;
+        game.error = '';
         gameStore[lobbyCode] = game;
         gameStore[lobbyCode].currentTimer = setInterval(() => {
             if (gameStore[lobbyCode]) {
@@ -351,7 +360,7 @@ function startRound(lobbyCode, io) {
                 if (gameStore[lobbyCode].currentTime === 0) {
                     clearInterval(gameStore[lobbyCode].currentTimer);
                     console.log("Interval Cleared, starting new round.");
-                    startRound(lobbyCode, io);
+                    startRound(lobbyCode, io, 'Firechair did not select a prompt, so a new user was selected.');
                 }
             } else {
                 clearInterval(gameStore[lobbyCode].currentTimer);
