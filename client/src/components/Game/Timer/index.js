@@ -20,7 +20,7 @@ function SelectPrompt({lobbyId}){
     return (
         <>
         <p className='text-light'> Time Remaining: {seconds > 0 ? seconds : "Wating for Server..."}</p>
-        <p className='text-light'>{gameData.error}</p>
+        {gameData.error ? <p className='alert alert-info'>{gameData.error}</p>:<></>}
         </>
     );
 };
