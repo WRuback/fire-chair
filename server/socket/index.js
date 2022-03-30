@@ -225,7 +225,7 @@ function gameSystem(socket, io) {
                                     io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('displaySelectionScore', gameStore[lobbyCode].clientData());
                                     io.to(gameStore[lobbyCode].fireChair.socketID).emit('displaySelectionScore', gameStore[lobbyCode].clientData());
                                 } else {
-                                    startRound(lobbyCode, io, 'No one made a selection, so the round was restarted.');
+                                    startRound(lobbyCode, io, 'No one made a selection, so the round was ended without scoring.');
                                 }
                             }
                         } else {
@@ -329,7 +329,7 @@ function promptSelected(lobbyCode, prompt, io) {
                         io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswers', gameStore[lobbyCode].clientData());
                         io.to(gameStore[lobbyCode].fireChair.socketID).emit('selectAnswersFC', gameStore[lobbyCode].clientDataFC());
                     } else {
-                        startRound(lobbyCode, io, 'Firechair did not answer the prompt, so a new user was selected.');
+                        startRound(lobbyCode, io, 'The Firechair did not answer the prompt, so a new user was selected.');
                     }
                 }
             } else {
@@ -349,7 +349,7 @@ function startRound(lobbyCode, io, errorMessage) {
         if (errorMessage) {
             game.error = errorMessage;
         }
-        game.currentTime = 30;
+        game.currentTime = 20;
         io.to(lobbyCode).except(game.fireChair.socketID).emit('requestPrompt', game.clientData());
         io.to(game.fireChair.socketID).emit('requestPromptFC', game.clientDataFC());
         clearInterval(gameStore[lobbyCode].currentTimer);
@@ -362,7 +362,7 @@ function startRound(lobbyCode, io, errorMessage) {
                 if (gameStore[lobbyCode].currentTime === 0) {
                     clearInterval(gameStore[lobbyCode].currentTimer);
                     console.log("Interval Cleared, starting new round.");
-                    startRound(lobbyCode, io, 'Firechair did not select a prompt, so a new user was selected.');
+                    startRound(lobbyCode, io, 'The Firechair did not select a prompt, so a new user was selected.');
                 }
             } else {
                 clearInterval(gameStore[lobbyCode].currentTimer);
