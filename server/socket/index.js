@@ -100,9 +100,7 @@ function Player(username, socketID) {
     this.socketID = socketID;
     this.currentScore = 0;
 }
-const testplayer = new Player("Testman", "weertetufghft");
-const testGame = new Game(testplayer, false, 'ABCD');
-const gameStore = { ABCD: testGame };
+const gameStore = {};
 
 
 function gameSystem(socket, io) {
@@ -136,7 +134,10 @@ function gameSystem(socket, io) {
             }
         }
         const host = new Player(username, socket.id);
-        const newRoom = generateRoomCode();
+        let newRoom;
+        do{
+            newRoom = generateRoomCode();
+        }while(gameStore[newRoom]);
         const newGame = new Game(host, usingCustomDeck, newRoom);
         gameStore[newRoom] = newGame;
 
@@ -248,6 +249,7 @@ function gameSystem(socket, io) {
                 gameStore[lobbyCode].selections[selected].push(username);
                 gameStore[lobbyCode].totalSelections++;
                 if (gameStore[lobbyCode].totalSelections >= game.players.length - 1) {
+                    clearInterval(gameStore[lobbyCode].currentTimer);
                     gameStore[lobbyCode].gameState = "Display Score";
                     gameStore[lobbyCode].countScores();
                     io.to(lobbyCode).except(gameStore[lobbyCode].fireChair.socketID).emit('displaySelectionScore', gameStore[lobbyCode].clientData());

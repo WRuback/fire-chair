@@ -24,7 +24,7 @@ function SelectAnswer({ lobbyId }) {
     return (
         <div>
             <h4 className='text-light'>Round {gameData.currentRound}</h4>
-            <h1 className='text-light'> Which answer did {gameData.fireChair.username} select for the prompt '{gameData.currentPrompt}'</h1>
+            <h1 className='text-light'> Which answer did <span className='text-warning'>{gameData.fireChair.username}</span> select for the prompt '{gameData.currentPrompt}'</h1>
             <Timer lobbyId={lobbyId}></Timer>
             {answerEntered ? <>
                 <p>Awaiting other answers.</p>

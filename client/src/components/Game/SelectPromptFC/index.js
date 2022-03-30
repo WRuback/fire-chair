@@ -31,7 +31,7 @@ function SelectPrompt({lobbyId}){
     return (
         <>
         <h4 className='text-light'>Round {gameData.currentRound}</h4>
-        <h1 className='text-light'> You are in the fire Chair!</h1>
+        <h1 className='text-light'> <span className='text-warning'>You</span> are in the fire Chair!</h1>
         <Timer lobbyId={lobbyId}></Timer>
         <p className='text-light'> Please select a prompt.</p>
         {loading ? (
