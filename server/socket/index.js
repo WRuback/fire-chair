@@ -269,8 +269,8 @@ function gameSystem(socket, io) {
             for (let player of players) {
                 player.leave(lobbyCode);
             }
-            clearInterval(gameStore[lobbyCode].currentTimer);
-            console.log('Removed due to game deletion');
+            //clearInterval(gameStore[lobbyCode].currentTimer);
+            //console.log('Removed due to game deletion');
             delete gameStore[lobbyCode];
         }
     });
@@ -287,8 +287,8 @@ function gameSystem(socket, io) {
                         console.log(room);
                         const connectedPlayers = await io.in(room).fetchSockets();
                         if (connectedPlayers.length <= 0) {
-                            clearInterval(gameStore[room].currentTimer);
-                            console.log('Removed due to game deletion');
+                            //clearInterval(gameStore[room].currentTimer);
+                            //console.log('Removed due to game deletion');
                             delete gameStore[room];
                             console.log(room + " deleted.");
                         }
