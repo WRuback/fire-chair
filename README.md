@@ -4,8 +4,6 @@
 
 We created Fire Chair as a way to play a favorite table top game "Hot Seat". This  is a multiplayer game where users can guess which answer was provided by the user in the Fire Chair.
 
-[Try the game here!](https://polw-fire-chair.herokuapp.com/)
-
 ## Key Technology Used
 
 The following items were used in making our full stack application:
